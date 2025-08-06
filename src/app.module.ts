@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AppService } from './app.service';
 import { NewsModule } from './news/news.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       driver:ApolloDriver,
       autoSchemaFile:'schema.gql'
     }),
-    NewsModule
+    NewsModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],

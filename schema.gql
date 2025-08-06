@@ -23,10 +23,18 @@ type Query {
 
 type Mutation {
   createArticle(data: CreateArticleDto!): News!
+  deleteArticle(id: String!): Boolean!
+  changeArticle(id: String!, data: UpdateArticleInput!): News!
 }
 
 input CreateArticleDto {
   title: String!
   text: String!
   author: String!
+}
+
+input UpdateArticleInput {
+  title: String
+  text: String
+  author: String
 }

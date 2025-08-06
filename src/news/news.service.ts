@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {Article} from '@prisma/client'
-import { ArticleDto } from './news.dto';
+import { ArticleDto, UpdateArticleDto } from './news.dto';
 
 @Injectable()
 export class NewsService {
@@ -18,6 +18,14 @@ async create(dto: ArticleDto): Promise<Article> {
 
  async getById(id:string):Promise<Article | null>{
     return await this.prisma.article.findFirst({where: {id}})
+ }
+
+ async deleteById(id:string):Promise<void>{
+  await this.prisma.article.delete({where:{id}})
+ }
+
+ async changeById(id:string , newData:UpdateArticleDto):Promise<Article>{
+  return await this.prisma.article.update({where:{id},data:newData})
  }
 
 }

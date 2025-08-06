@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { NewsService } from './news.service';
 import { News } from './news.model';
-import { CreateArticleDto } from './createArticle.model';
+import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
 
 @Resolver(() => News)
 export class NewsResolver {
@@ -20,5 +20,16 @@ export class NewsResolver {
   @Mutation(() => News)
   async createArticle(@Args('data') data:CreateArticleDto):Promise<News>{
     return this.newsService.create(data)
+  }
+
+  @Mutation(() => Boolean)
+  async deleteArticle(@Args('id') id:string):Promise<boolean>{
+    await this.newsService.deleteById(id)
+    return true
+  }
+
+  @Mutation(() => News)
+  async changeArticle(@Args('id') id:string, @Args('data') data:UpdateArticleInput):Promise<News>{
+    return this.newsService.changeById(id,data)
   }
 }
