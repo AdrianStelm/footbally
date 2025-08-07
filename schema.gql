@@ -20,13 +20,19 @@ type User {
   email: String!
   password: String!
   username: String!
+  role: Role!
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 type Query {
   getAllArticles: News!
   getArticle(id: String!): News!
-  getAllUsers: User!
-  getUser(id: String!): User!
+  getAllUsers: [User!]!
+  getUserByEmail(email: String!): User!
 }
 
 type Mutation {
@@ -36,6 +42,7 @@ type Mutation {
   createUser(data: CreateUser!): User!
   updateUser(id: String!, data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
+  login(email: String!, password: String!): String!
 }
 
 input CreateArticleDto {
@@ -54,10 +61,12 @@ input CreateUser {
   email: String!
   password: String!
   username: String!
+  role: Role! = USER
 }
 
 input UpdateUser {
   email: String
   password: String
   username: String
+  role: Role = USER
 }

@@ -2,20 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { UserDto, UpdateUserDto } from './user.dto';
 import {User} from '@prisma/client'
 import { PrismaService } from '../prisma.service';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
     async create(dto:UserDto):Promise<User>{
+        const saltRounds = 10;
+        const hash = await bcrypt.hash(dto.password,saltRounds);
+
         return await this.prisma.user.create({
-            data:dto
+            data:{
+            ...dto,
+            password: hash,
+            }
         })
     }
 
-    async getOneById(id:string):Promise<User | null>{
+    async findByEmail(email:string):Promise<User | null>{
         return await this.prisma.user.findFirst({
-            where:{id}
+            where:{email}
         })
     }
 

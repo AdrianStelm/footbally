@@ -1,4 +1,7 @@
-import { Field, ObjectType, InputType, PartialType } from "@nestjs/graphql";
+import { Field, ObjectType, InputType, PartialType, registerEnumType } from "@nestjs/graphql";
+import { Role as PrismaRole } from '@prisma/client';
+
+registerEnumType(PrismaRole,{name:'Role'});
 
 @ObjectType()
 export class User{
@@ -10,6 +13,9 @@ export class User{
 
     @Field()
     username:string
+
+    @Field(() => PrismaRole) 
+    role: PrismaRole;
 }
 
 @InputType()
@@ -22,6 +28,9 @@ export class CreateUser{
 
     @Field()
     username:string
+
+    @Field(() => PrismaRole, { defaultValue: PrismaRole.USER }) 
+    role: PrismaRole;
 }
 
 @InputType()
