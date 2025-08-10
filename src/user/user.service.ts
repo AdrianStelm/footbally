@@ -39,5 +39,11 @@ export class UserService {
         await this.prisma.user.delete({where: {id}})
     }
 
+    async updatePassword(email:string, password:string) :Promise<void>{
+        await this.prisma.user.update({where:{email} , data:{
+            password
+        }})
+    }
+
 
 }
