@@ -1,11 +1,39 @@
-import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { gql } from "@apollo/client";
+import client from "../../../apollo-client";
 
-export default function Page(){
-    return(
-        <>
-        <div>asdasd</div>
-        <Image src='/next.svg' alt='' width='200' height='200'/>
-        </>
-    )
+const GET_ARTICLES = gql`
+  query getNewestArticles {
+    getAllArticles {
+      id
+      title
+      text
+    }
+  }
+`;
+
+interface Article {
+    id: string
+    title: string
+    text: string
+}
+
+interface getAllArticlesData {
+    getAllArticles: Article[]
+}
+
+export const revalidate = 300;
+
+export default async function Page() {
+    const { data } = await client.query<getAllArticlesData>({ query: GET_ARTICLES });
+
+    return (
+        <div>
+            {data.getAllArticles.map((article: Article) => (
+                <div key={article.id}>
+                    <h2>{article.title}</h2>
+                    <p>{article.text}</p>
+                </div>
+            ))}
+        </div>
+    );
 }

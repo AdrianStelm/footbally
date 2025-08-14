@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.9",
     "@apollo/server": "^4.12.2",
     "@nestjs/apollo": "^13.1.0",
     "@nestjs/class-validator": "^0.13.4",
@@ -33,6 +34,8 @@
     "@prisma/client": "^6.13.0",
     "apollo-server-express": "^3.13.0",
     "bcrypt": "^6.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "graphql": "^16.11.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

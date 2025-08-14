@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import {Actor} from "next/font/google";
+import { Actor } from "next/font/google";
 import "./globals.css";
+import { Providers } from "../../providers";
+import Link from "next/link";
 
 const actor = Actor({
   subsets: ["latin"],
-  weight: ['400'],
-  variable:'--font-actor'
+  weight: ["400"],
+  variable: "--font-actor",
 });
 
 export const metadata: Metadata = {
@@ -20,10 +22,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${actor.variable} ${actor.variable} antialiased`}
-      >
-        {children}
+      <body className={`${actor.variable} antialiased`}>
+        <header className="flex justify-between items-center p-8 bg-white rounded-3xl ">
+          <Link href='/' className="text-4xl">Footbally.</Link>
+          <div className="flex gap-2">
+            <Link href='/articles'>News</Link>
+            <Link href='/register'>Register</Link>
+            <Link href='/login'>Login</Link>
+          </div>
+        </header>
+        <Providers>
+          {children}
+        </Providers>
+        <footer><p>FOOTER</p></footer>
       </body>
     </html>
   );

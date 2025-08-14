@@ -1,22 +1,23 @@
-import { ObjectType, Field} from '@nestjs/graphql';
+/* eslint-disable prettier/prettier */
+import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
-export class News{
+export class News {
     @Field()
     id: string
 
     @Field()
-    title:string
+    title: string
 
     @Field()
-    text:string
+    text: string
 
     @Field()
-    author:string
+    author: string
 
     @Field(() => Date)
-    createdAt:Date
+    createdAt: Date
 
     @Field(() => Date)
-    updatedAt:Date
+    updatedAt: Date
 }

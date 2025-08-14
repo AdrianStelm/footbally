@@ -16,6 +16,13 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type NewsPaginationResponse {
+  items: [News!]!
+  totalItems: Int!
+  totalPages: Int!
+  currentPage: Int!
+}
+
 type User {
   email: String!
   password: String!
@@ -29,8 +36,10 @@ enum Role {
 }
 
 type Query {
-  getAllArticles: News!
+  getAllArticles: [News!]!
+  getNewestArticles: [News!]!
   getArticle(id: String!): News!
+  news(page: Int!, limit: Int!, author: String, search: String, sort: String): NewsPaginationResponse!
   getAllUsers: [User!]!
   getUserByEmail(email: String!): User!
 }
@@ -43,6 +52,7 @@ type Mutation {
   updateUser(id: String!, data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
   login(email: String!, password: String!): String!
+  retrievePassword(newPassword: String!, email: String!): Boolean!
 }
 
 input CreateArticleDto {
