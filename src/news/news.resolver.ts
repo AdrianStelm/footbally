@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { NewsService } from './news.service';
 import { News } from './news.model';

@@ -35,6 +35,12 @@ enum Role {
   ADMIN
 }
 
+type AuthTokens {
+  access_token: String!
+  refresh_token: String!
+  userId: String!
+}
+
 type Query {
   getAllArticles: [News!]!
   getNewestArticles: [News!]!
@@ -48,11 +54,12 @@ type Mutation {
   createArticle(data: CreateArticleDto!): News!
   deleteArticle(id: String!): Boolean!
   changeArticle(id: String!, data: UpdateArticleInput!): News!
-  createUser(data: CreateUser!): User!
+  createUser(data: CreateUser!): AuthTokens!
   updateUser(id: String!, data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
-  login(email: String!, password: String!): String!
-  retrievePassword(newPassword: String!, email: String!): Boolean!
+  login(email: String!, password: String!): AuthTokens!
+  refreshTokens: AuthTokens!
+  logout(userId: String!): Boolean!
 }
 
 input CreateArticleDto {

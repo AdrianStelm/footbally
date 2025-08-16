@@ -4,6 +4,7 @@ import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
 import { useMutation, gql } from "@apollo/client";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "../../../store/authStore";
 
 const registerFields: FieldConfig[] = [
     { name: "username", label: "Write your username", type: "text", required: true },
@@ -12,17 +13,20 @@ const registerFields: FieldConfig[] = [
 ];
 
 const REGISTER_USER = gql`
-  mutation RegisterUser($data: CreateUser!) {
-    createUser(data: $data) {
-      email
-      username
-    }
+mutation RegisterUser($data: CreateUser!) {
+  createUser(data: $data) {
+    userId
+    access_token
   }
+}
 `;
 
 export default function Page() {
     const [registerUser, { loading, error, data }] = useMutation(REGISTER_USER);
     const router = useRouter()
+    const setAuth = useAuthStore((state) => state.setAuth);
+
+
 
     const handleRegister = async (formData: any) => {
         try {
@@ -35,8 +39,9 @@ export default function Page() {
                     }
                 }
             });
-            console.log("User registered:", result.data.createUser);
-            router.replace('/login')
+            const { access_token, userId } = result.data.createUser;
+            setAuth(access_token, userId);
+            router.replace('/')
         } catch (err) {
             console.error("Registration error:", err);
         }

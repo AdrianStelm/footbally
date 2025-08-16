@@ -4,6 +4,7 @@ import { FieldConfig } from "../../../types/formTypes"
 import Form from "../../../components/Form"
 import { gql, useMutation } from "@apollo/client"
 import { useRouter } from "next/navigation"
+import { useAuthStore } from "../../../store/authStore"
 
 const loginFields: FieldConfig[] = [
     { name: "email", label: 'Write your email', type: 'email', placeholder: 'test@example.com', required: true },
@@ -12,7 +13,10 @@ const loginFields: FieldConfig[] = [
 
 const LOGIN_USER = gql`
 mutation LoginUser($email: String!, $password: String!) {
-  login(email: $email, password: $password) 
+  login(email: $email, password: $password){
+  access_token
+  userId
+  }
 }
 `
 
@@ -20,6 +24,8 @@ export default function Page() {
 
     const [loginUser, { loading, error, data }] = useMutation(LOGIN_USER);
     const router = useRouter()
+    const setAuth = useAuthStore((state) => state.setAuth);
+
 
     const handleLogin = async (formData: any) => {
         try {
@@ -29,7 +35,8 @@ export default function Page() {
                     password: formData.password
                 }
             });
-            console.log("User loginned:", result.data.createUser);
+            const { access_token, userId } = result.data.login;
+            setAuth(access_token, userId);
             router.replace('/')
         } catch (err) {
             console.error("Login error:", err);

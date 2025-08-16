@@ -11,11 +11,12 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver:ApolloDriver,
-      autoSchemaFile:'schema.gql'
+      driver: ApolloDriver,
+      autoSchemaFile: 'schema.gql',
+      context: ({ req, res }) => ({ req, res }),
     }),
     ConfigModule.forRoot({
-      isGlobal:true
+      isGlobal: true
     }),
     NewsModule,
     UserModule,
@@ -24,4 +25,4 @@ import { ConfigModule } from '@nestjs/config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

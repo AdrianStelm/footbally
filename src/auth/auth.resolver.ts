@@ -1,32 +1,65 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
-import * as bcrypt from 'bcrypt'
+import { AuthTokens } from './auth-tokens.model';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private readonly authService: AuthService, private readonly userService: UserService,) { }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService
+  ) { }
 
-  @Mutation(() => String)
-  async login(@Args('email') email: string, @Args('password') password: string) {
+  // Логін
+  @Mutation(() => AuthTokens)
+  async login(
+    @Args('email') email: string,
+    @Args('password') password: string,
+    @Context() ctx
+  ): Promise<AuthTokens> {
+    const user = await this.authService.validateUser(email, password);
+    if (!user) throw new Error('Invalid credentials');
 
-    const user = await this.authService.ValidateUser(email, password)
+    const tokens = await this.authService.login(user);
 
-    if (!user) throw new Error('Invalid credentials')
-    const token = await this.authService.login(user)
-    return token.acces_token
+    // Встановлюємо refresh token у cookie
+    ctx.res.cookie('refresh_token', tokens.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/graphql',
+    });
+
+    return tokens;
   }
 
+  // Оновлення токенів через cookie
+  @Mutation(() => AuthTokens)
+  async refreshTokens(@Context() ctx): Promise<AuthTokens> {
+    const token = ctx.req.cookies['refresh_token'];
+    if (!token) throw new Error('No refresh token');
+    const tokens = await this.authService.refreshTokens(token);
+
+    // Оновлюємо cookie
+    ctx.res.cookie('refresh_token', tokens.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/graphql',
+    });
+
+    return tokens;
+  }
+
+  // Логаут
   @Mutation(() => Boolean)
-  async retrievePassword(@Args('newPassword') newPassword: string, @Args('email') email: string) {
-
-    const user = await this.userService.findByEmail(email)
-    if (!user) return false
-
-    const hashPassword = await bcrypt.hash(newPassword, 10)
-    await this.userService.updatePassword(email, hashPassword)
-    return true
+  async logout(@Args('userId') userId: string, @Context() ctx): Promise<boolean> {
+    await this.userService.clearRefreshToken(userId);
+    ctx.res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    return true;
   }
-
-
 }

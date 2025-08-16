@@ -40,6 +40,10 @@ export class UserService {
         return await this.prisma.user.update({ where: { id }, data: newData })
     }
 
+    async getById(id: string): Promise<User | null> {
+        return await this.prisma.user.findFirst({ where: { id } })
+    }
+
     async deleteById(id: string): Promise<void> {
         await this.prisma.user.delete({ where: { id } })
     }
@@ -50,6 +54,20 @@ export class UserService {
                 password
             }
         })
+    }
+
+    async updateRefreshToken(userId: string, refreshToken: string) {
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken },
+        });
+    }
+
+    async clearRefreshToken(userId: string): Promise<void> {
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken: null },
+        });
     }
 
 

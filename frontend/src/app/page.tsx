@@ -6,6 +6,7 @@ export default function Home() {
 
       <main>
         <section><article></article><div></div></section>
+
       </main>
 
     </div>

@@ -1,8 +1,10 @@
+
 import type { Metadata } from "next";
 import { Actor } from "next/font/google";
 import "./globals.css";
 import { Providers } from "../../providers";
-import Link from "next/link";
+import Header from "../../components/Header";
+
 
 const actor = Actor({
   subsets: ["latin"],
@@ -20,18 +22,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body className={`${actor.variable} antialiased`}>
-        <header className="flex justify-between items-center p-8 bg-white rounded-3xl ">
-          <Link href='/' className="text-4xl">Footbally.</Link>
-          <div className="flex gap-2">
-            <Link href='/articles'>News</Link>
-            <Link href='/register'>Register</Link>
-            <Link href='/login'>Login</Link>
-          </div>
-        </header>
         <Providers>
+          <Header></Header>
           {children}
         </Providers>
         <footer><p>FOOTER</p></footer>

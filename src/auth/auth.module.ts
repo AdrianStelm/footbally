@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService} from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from '../user/user.module';
-import { RolesGuard} from './roles.guard';
+import { RolesGuard } from './roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -21,9 +21,9 @@ import { APP_GUARD } from '@nestjs/core';
         signOptions: { expiresIn: '2h' },
       }),
     }),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy, {provide:APP_GUARD,useClass:RolesGuard}],
+  providers: [AuthService, AuthResolver, JwtStrategy, { provide: APP_GUARD, useClass: RolesGuard }],
+  exports: [AuthService],
 })
-export class AuthModule {}
-
+export class AuthModule { }
