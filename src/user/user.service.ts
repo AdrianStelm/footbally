@@ -70,5 +70,41 @@ export class UserService {
         });
     }
 
+    async setResetToken(userId: string, resetToken: string, expireTime: Date) {
+        await this.prisma.user.update({ where: { id: userId }, data: { resetPasswordToken: resetToken, resetPasswordExpires: expireTime } })
+    }
+
+    async findByValidResetToken(token: string) {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                resetPasswordToken: { not: null },
+                resetPasswordExpires: { gt: new Date() },
+            },
+        });
+
+        if (!user || !user.resetPasswordToken) return null;
+
+        const isMatch = await bcrypt.compare(token, user.resetPasswordToken);
+        if (!isMatch) return null;
+
+        return user;
+    }
+
+
+    async resetPassword(userId: string, newPassword: string): Promise<boolean> {
+        const hashed = await bcrypt.hash(newPassword, 10);
+
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                password: hashed,
+                resetPasswordToken: null,
+                resetPasswordExpires: null,
+            },
+        });
+
+        return true;
+    }
+
 
 }

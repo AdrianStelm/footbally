@@ -35,7 +35,6 @@ export class AuthService {
             secret: process.env.JWT_SECRET_REFRESH_TOKEN,
         });
 
-        // Зберігаємо refresh token у БД **без хешування**
         await this.userService.updateRefreshToken(user.id, refresh_token);
 
         return {
@@ -64,4 +63,7 @@ export class AuthService {
             throw new Error('Refresh token expired or invalid');
         }
     }
+
+
+
 }

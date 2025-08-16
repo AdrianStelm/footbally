@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from '../user/user.module';
 import { RolesGuard } from './roles.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     forwardRef(() => UserModule),
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy, { provide: APP_GUARD, useClass: RolesGuard }],
-  exports: [AuthService],
+  providers: [AuthService, AuthResolver, EmailService, JwtStrategy, { provide: APP_GUARD, useClass: RolesGuard }],
+  exports: [AuthService, EmailService],
 })
 export class AuthModule { }

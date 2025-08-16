@@ -60,6 +60,8 @@ type Mutation {
   login(email: String!, password: String!): AuthTokens!
   refreshTokens: AuthTokens!
   logout(userId: String!): Boolean!
+  requestPasswordReset(email: String!): Boolean!
+  passwordReset(token: String!, newPassword: String!): Boolean!
 }
 
 input CreateArticleDto {

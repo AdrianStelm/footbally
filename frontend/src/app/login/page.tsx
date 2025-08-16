@@ -5,6 +5,7 @@ import Form from "../../../components/Form"
 import { gql, useMutation } from "@apollo/client"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "../../../store/authStore"
+import Link from "next/link"
 
 const loginFields: FieldConfig[] = [
     { name: "email", label: 'Write your email', type: 'email', placeholder: 'test@example.com', required: true },
@@ -19,7 +20,6 @@ mutation LoginUser($email: String!, $password: String!) {
   }
 }
 `
-
 export default function Page() {
 
     const [loginUser, { loading, error, data }] = useMutation(LOGIN_USER);
@@ -47,6 +47,7 @@ export default function Page() {
         <div>
             <Form fields={loginFields} onSubmit={handleLogin} buttonText="Login"></Form>
             {error && <p className="text-red-500 mt-2">Error: {error.message}</p>}
+            <Link href='/forgot-password'>Forgot password</Link>
         </div>
     )
 }
