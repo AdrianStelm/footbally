@@ -1,38 +1,42 @@
 import { Field, ObjectType, InputType, PartialType, registerEnumType } from "@nestjs/graphql";
 import { Role as PrismaRole } from '@prisma/client';
 
-registerEnumType(PrismaRole,{name:'Role'});
+registerEnumType(PrismaRole, { name: 'Role' });
 
 @ObjectType()
-export class User{
-    @Field()
-    email:string
+export class User {
 
     @Field()
-    password:string
+    id: string;
 
     @Field()
-    username:string
+    email: string
 
-    @Field(() => PrismaRole) 
+    @Field()
+    password: string
+
+    @Field()
+    username: string
+
+    @Field(() => PrismaRole)
     role: PrismaRole;
 }
 
 @InputType()
-export class CreateUser{
+export class CreateUser {
     @Field()
-    email:string
+    email: string
 
     @Field()
-    password:string
+    password: string
 
     @Field()
-    username:string
+    username: string
 
-    @Field(() => PrismaRole, { defaultValue: PrismaRole.USER }) 
+    @Field(() => PrismaRole, { defaultValue: PrismaRole.USER })
     role: PrismaRole;
 }
 
 @InputType()
-export class UpdateUser extends PartialType(CreateUser){}
+export class UpdateUser extends PartialType(CreateUser) { }
 

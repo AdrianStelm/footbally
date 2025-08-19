@@ -1,4 +1,4 @@
-import { InputType, Field} from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 import { PartialType } from '@nestjs/graphql';
 
 @InputType()
@@ -10,8 +10,8 @@ export class CreateArticleDto {
   text: string;
 
   @Field()
-  author: string;
+  authorId: string;
 }
 
 @InputType()
-export class UpdateArticleInput extends PartialType(CreateArticleDto) {}
+export class UpdateArticleInput extends PartialType(CreateArticleDto) { }

@@ -1,7 +1,7 @@
 import { MinLength, IsString } from '@nestjs/class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 
-export class ArticleDto {
+export class CreateArticleDto {
   @MinLength(5)
   @IsString()
   title: string;
@@ -10,7 +10,7 @@ export class ArticleDto {
   text: string;
 
   @IsString()
-  author: string;
+  authorId: string;
 }
 
-export class UpdateArticleDto extends PartialType(ArticleDto) { }
+export class UpdateArticleDto extends PartialType(CreateArticleDto) { }

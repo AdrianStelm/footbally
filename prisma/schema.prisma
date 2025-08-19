@@ -22,7 +22,8 @@ model Article {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   text      String
-  author    String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -37,4 +38,5 @@ model User {
   refreshToken         String?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  articles             Article[]
 }

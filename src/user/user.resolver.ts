@@ -27,6 +27,7 @@ export class UserResolver {
   async getUserByEmail(@Args('email') email: string): Promise<User | null> {
     return await this.userService.findByEmail(email)
   }
+
   @Mutation(() => AuthTokens)
   async createUser(
     @Args('data') data: CreateUser,

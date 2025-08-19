@@ -2,50 +2,72 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Article } from '@prisma/client'
-import { ArticleDto, UpdateArticleDto } from './news.dto';
+import { CreateArticleDto, UpdateArticleDto } from './news.dto';
 import { Prisma } from '@prisma/client';
 import { NewsPaginationArgs } from './news-pagination.args';
+
+type ArticleWithAuthor = Prisma.ArticleGetPayload<{ include: { author: true } }>;
+
 
 @Injectable()
 export class NewsService {
   constructor(private prisma: PrismaService) { }
 
-  async create(dto: ArticleDto): Promise<Article> {
-    return await this.prisma.article.create({
-      data: dto,
+  async create(dto: CreateArticleDto) {
+    return this.prisma.article.create({
+      data: {
+        title: dto.title,
+        text: dto.text,
+        author: { connect: { id: dto.authorId } }, // 🔑
+      },
+      include: { author: true },
     });
   }
+
   async getArticles(params?: {
     take?: number;
     skip?: number;
     orderBy?: { [P in keyof Article]?: 'asc' | 'desc' };
     where?: any;
-  }): Promise<Article[]> {
+  }): Promise<ArticleWithAuthor[]> {
     return this.prisma.article.findMany({
       take: params?.take,
       skip: params?.skip,
       orderBy: params?.orderBy,
       where: params?.where,
+      include: { author: true },
     });
   }
 
-
-  async getById(id: string): Promise<Article | null> {
-    return await this.prisma.article.findFirst({ where: { id } })
+  async getById(id: string): Promise<ArticleWithAuthor | null> {
+    return await this.prisma.article.findFirst({
+      where: { id },
+      include: { author: true },
+    });
   }
 
   async deleteById(id: string): Promise<void> {
-    await this.prisma.article.delete({ where: { id } })
+    await this.prisma.article.delete({
+      where: { id },
+    });
   }
 
-  async changeById(id: string, newData: UpdateArticleDto): Promise<Article> {
-    return await this.prisma.article.update({ where: { id }, data: newData })
+  async changeById(id: string, dto: UpdateArticleDto): Promise<ArticleWithAuthor | null> {
+    return this.prisma.article.update({
+      where: { id },
+      data: {
+        title: dto.title,
+        text: dto.text,
+        ...(dto.authorId && { author: { connect: { id: dto.authorId } } }),
+      },
+      include: { author: true },
+    });
   }
 
   async findAll({ page, limit, author, search, sort }: NewsPaginationArgs) {
     const where: Prisma.ArticleWhereInput = {};
 
-    if (author) where.author = author;
+    if (author) where.author = { id: author };
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -68,7 +90,6 @@ export class NewsService {
       if (sort === 'title_desc') orderBy = { title: 'desc' };
     }
 
-    // Знаходимо курсор для потрібної сторінки
     let cursorId: string | undefined;
     if (page > 1) {
       const cursorItem = await this.prisma.article.findMany({
@@ -76,6 +97,7 @@ export class NewsService {
         skip: (page - 1) * limit - 1,
         take: 1,
         orderBy,
+        include: { author: true },
       });
 
       if (cursorItem.length > 0) {
@@ -89,6 +111,7 @@ export class NewsService {
       skip: cursorId ? 1 : 0,
       cursor: cursorId ? { id: cursorId } : undefined,
       orderBy,
+      include: { author: true },
     });
 
     return {
@@ -98,5 +121,4 @@ export class NewsService {
       currentPage: page,
     };
   }
-
 }

@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { User } from 'src/user/user.graphql.model';
 
 @ObjectType()
 export class News {
@@ -11,8 +12,9 @@ export class News {
     @Field()
     text: string
 
-    @Field()
-    author: string
+    @Field(() => User)
+    author: User
+
 
     @Field(() => Date)
     createdAt: Date

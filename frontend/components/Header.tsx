@@ -9,7 +9,7 @@ export default function Header() {
     const { accessToken, userId, initialized } = useAuthStore();
     useInitAuth();
 
-    if (!initialized) return null; // чекати завершення ініціалізації
+    if (!initialized) return null;
 
     return (
         <header className="flex justify-between items-center p-8 bg-white rounded-3xl ">
@@ -25,7 +25,10 @@ export default function Header() {
                 )}
 
                 {accessToken && userId && (
-                    <button onClick={() => logout(userId)}>Logout</button>
+                    <>
+                        <button onClick={() => logout(userId)}>Logout</button>
+                        <Link href='/create-article'>Create Article</Link>
+                    </>
                 )}
             </div>
         </header>

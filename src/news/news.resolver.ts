@@ -3,7 +3,9 @@ import { NewsService } from './news.service';
 import { News } from './news.model';
 import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { JwtGuard } from 'src/auth/jwt.guard';
 import { Roles } from 'src/auth/roles.decorator';
+import { Role } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
 import { NewsPaginationArgs } from './news-pagination.args';
@@ -28,12 +30,13 @@ export class NewsResolver {
     return this.newsService.getById(id)
   }
 
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN', 'USER')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => News)
   async createArticle(@Args('data') data: CreateArticleDto): Promise<News> {
     return this.newsService.create(data)
   }
+
 
   @UseGuards(RolesGuard, GqlAuthGuard)
   @Roles('ADMIN', 'USER')
@@ -45,8 +48,8 @@ export class NewsResolver {
 
   @UseGuards(RolesGuard, GqlAuthGuard)
   @Roles('ADMIN', 'USER')
-  @Mutation(() => News)
-  async changeArticle(@Args('id') id: string, @Args('data') data: UpdateArticleInput): Promise<News> {
+  @Mutation(() => News, { nullable: true })
+  async changeArticle(@Args('id') id: string, @Args('data') data: UpdateArticleInput): Promise<News | null> {
     return this.newsService.changeById(id, data)
   }
 

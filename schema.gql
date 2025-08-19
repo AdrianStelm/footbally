@@ -2,11 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: String!
+  email: String!
+  password: String!
+  username: String!
+  role: Role!
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
 type News {
   id: String!
   title: String!
   text: String!
-  author: String!
+  author: User!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -21,18 +34,6 @@ type NewsPaginationResponse {
   totalItems: Int!
   totalPages: Int!
   currentPage: Int!
-}
-
-type User {
-  email: String!
-  password: String!
-  username: String!
-  role: Role!
-}
-
-enum Role {
-  USER
-  ADMIN
 }
 
 type AuthTokens {
@@ -53,7 +54,7 @@ type Query {
 type Mutation {
   createArticle(data: CreateArticleDto!): News!
   deleteArticle(id: String!): Boolean!
-  changeArticle(id: String!, data: UpdateArticleInput!): News!
+  changeArticle(id: String!, data: UpdateArticleInput!): News
   createUser(data: CreateUser!): AuthTokens!
   updateUser(id: String!, data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
@@ -67,13 +68,13 @@ type Mutation {
 input CreateArticleDto {
   title: String!
   text: String!
-  author: String!
+  authorId: String!
 }
 
 input UpdateArticleInput {
   title: String
   text: String
-  author: String
+  authorId: String
 }
 
 input CreateUser {
