@@ -4,7 +4,12 @@ import { UserService } from 'src/user/user.service';
 import { EmailService } from 'src/email/email.service';
 import { AuthTokens } from './auth-tokens.model';
 import { randomBytes } from 'crypto';
+import { JwtGuard } from './jwt.guard';
+import { UseGuards } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Role } from '@prisma/client';
+import { Roles } from './roles.decorator';
+import { RolesGuard } from './roles.guard';
 
 @Resolver()
 export class AuthResolver {
@@ -36,6 +41,8 @@ export class AuthResolver {
     return tokens;
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => AuthTokens)
   async refreshTokens(@Context() ctx): Promise<AuthTokens> {
     const token = ctx.req.cookies['refresh_token'];
@@ -52,6 +59,8 @@ export class AuthResolver {
     return tokens;
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => Boolean)
   async logout(@Args('userId') userId: string, @Context() ctx): Promise<boolean> {
     await this.userService.clearRefreshToken(userId);

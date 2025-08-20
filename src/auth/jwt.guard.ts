@@ -3,6 +3,13 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { GqlExecutionContext } from '@nestjs/graphql';
 import * as jwt from 'jsonwebtoken';
 
+export interface JwtPayload {
+    sub: string;
+    email?: string;
+    username?: string;
+    role?: string;
+}
+
 @Injectable()
 export class JwtGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
@@ -14,7 +21,7 @@ export class JwtGuard implements CanActivate {
         if (!token) throw new UnauthorizedException('Invalid token');
 
         try {
-            const payload = jwt.verify(token, process.env.JWT_SECRET!);
+            const payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
             ctx.user = payload;
             return true;
         } catch {

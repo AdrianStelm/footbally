@@ -4,10 +4,10 @@ import { News } from './news.model';
 import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { JwtGuard } from 'src/auth/jwt.guard';
+import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
 import { NewsPaginationArgs } from './news-pagination.args';
 import { NewsPaginationResponse } from './news-pagination.response';
 
@@ -22,7 +22,7 @@ export class NewsResolver {
 
   @Query(() => [News])
   async getNewestArticles(): Promise<News[]> {
-    return this.newsService.getArticles({ orderBy: { createdAt: 'asc' } })
+    return this.newsService.getArticles({ orderBy: { createdAt: 'desc' } })
   }
 
   @Query(() => News)
@@ -37,27 +37,36 @@ export class NewsResolver {
     return this.newsService.create(data)
   }
 
-
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN', 'USER')
-  @Mutation(() => Boolean)
-  async deleteArticle(@Args('id') id: string): Promise<boolean> {
-    await this.newsService.deleteById(id)
-    return true
-  }
-
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN', 'USER')
-  @Mutation(() => News, { nullable: true })
-  async changeArticle(@Args('id') id: string, @Args('data') data: UpdateArticleInput): Promise<News | null> {
-    return this.newsService.changeById(id, data)
-  }
-
-
   @Query(() => NewsPaginationResponse)
   async news(
     @Args() args: NewsPaginationArgs,
   ): Promise<NewsPaginationResponse> {
     return this.newsService.findAll(args);
   }
+
+  @Query(() => News, { nullable: true })
+  async getArticleBySlug(@Args('slug') slug: string): Promise<News | null> {
+    return this.newsService.getBySlug(slug);
+  }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
+  @Mutation(() => Boolean)
+  async deleteArticle(@Args('id') id: string, @CurrentUser('sub') userId: string) {
+    await this.newsService.deleteById(id, userId);
+    return true;
+  }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
+  @Mutation(() => News)
+  async changeArticle(
+    @Args('id') id: string,
+    @Args('data') data: UpdateArticleInput,
+    @CurrentUser('sub') userId: string,
+  ) {
+    return this.newsService.changeById(id, data, userId);
+  }
+
+
 }

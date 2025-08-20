@@ -1,10 +1,12 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Article } from '@prisma/client'
 import { CreateArticleDto, UpdateArticleDto } from './news.dto';
 import { Prisma } from '@prisma/client';
 import { NewsPaginationArgs } from './news-pagination.args';
+import slugify from 'slugify';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
+
 
 type ArticleWithAuthor = Prisma.ArticleGetPayload<{ include: { author: true } }>;
 
@@ -18,7 +20,8 @@ export class NewsService {
       data: {
         title: dto.title,
         text: dto.text,
-        author: { connect: { id: dto.authorId } }, // 🔑
+        slug: slugify(dto.title, { lower: true, strict: true }),
+        author: { connect: { id: dto.authorId } },
       },
       include: { author: true },
     });
@@ -46,24 +49,6 @@ export class NewsService {
     });
   }
 
-  async deleteById(id: string): Promise<void> {
-    await this.prisma.article.delete({
-      where: { id },
-    });
-  }
-
-  async changeById(id: string, dto: UpdateArticleDto): Promise<ArticleWithAuthor | null> {
-    return this.prisma.article.update({
-      where: { id },
-      data: {
-        title: dto.title,
-        text: dto.text,
-        ...(dto.authorId && { author: { connect: { id: dto.authorId } } }),
-      },
-      include: { author: true },
-    });
-  }
-
   async findAll({ page, limit, author, search, sort }: NewsPaginationArgs) {
     const where: Prisma.ArticleWhereInput = {};
 
@@ -82,7 +67,6 @@ export class NewsService {
       return { items: [], totalItems, totalPages, currentPage: page };
     }
 
-    // Сортування
     let orderBy: Prisma.ArticleOrderByWithRelationInput = { createdAt: 'desc' };
     if (sort) {
       if (sort === 'oldest') orderBy = { createdAt: 'asc' };
@@ -121,4 +105,30 @@ export class NewsService {
       currentPage: page,
     };
   }
+
+  async getBySlug(slug: string): Promise<ArticleWithAuthor | null> {
+    return this.prisma.article.findUnique({
+      where: { slug },
+      include: { author: true },
+    });
+  }
+
+  async deleteById(id: string, userId: string) {
+    const article = await this.prisma.article.findUnique({ where: { id } });
+    if (!article) throw new NotFoundException('Article not found');
+    console.log('article.authorId =', article?.authorId, 'userId from token =', userId);
+    if (article.authorId !== userId) throw new ForbiddenException('Not your article');
+
+    return this.prisma.article.delete({ where: { id } });
+  }
+
+  async changeById(id: string, data: UpdateArticleDto, userId: string) {
+    const article = await this.prisma.article.findUnique({ where: { id } });
+    if (!article) throw new NotFoundException('Article not found');
+    if (article.authorId !== userId) throw new ForbiddenException('Not your article');
+
+    return this.prisma.article.update({ where: { id }, data });
+  }
+
+
 }

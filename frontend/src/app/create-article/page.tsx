@@ -1,10 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react";
 import Form from "../../../components/Form";
 import { FieldConfig } from "../../../types/formTypes";
 import { gql, useMutation } from "@apollo/client";
-import { Article } from "../../../components/Article";
 import { useAuthStore } from "../../../store/authStore";
 
 const CREATE_ARTICLE = gql`
@@ -13,13 +11,9 @@ const CREATE_ARTICLE = gql`
       id
       title
       text
-      author { username }
-      createdAt
-      updatedAt
     }
   }
 `;
-
 
 const createArticleFields: FieldConfig[] = [
   { name: "title", label: "Input title", type: "text", placeholder: "Title", required: true },
@@ -27,9 +21,7 @@ const createArticleFields: FieldConfig[] = [
 ];
 
 export default function Page() {
-  const [setArticles] = useState<any[]>([]);
   const [createArticle] = useMutation(CREATE_ARTICLE);
-
 
   const handleSubmit = async (formData: Record<string, any>) => {
     const { accessToken, userId } = useAuthStore.getState();
@@ -39,7 +31,7 @@ export default function Page() {
     }
 
     try {
-      const { data } = await createArticle({
+      await createArticle({
         variables: {
           data: {
             title: formData.title,
@@ -53,11 +45,16 @@ export default function Page() {
           },
         },
       });
+
+      alert("Article created! ✅");
+      // Можна ще зробити редірект на список статей
+      // router.push("/articles") якщо Next.js router
     } catch (err) {
       console.error(err);
-      alert("Error creating article");
+      alert("Error creating article ❌");
     }
   };
+
   return (
     <div>
       <Form fields={createArticleFields} onSubmit={handleSubmit} buttonText="Create" />

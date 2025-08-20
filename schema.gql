@@ -22,6 +22,7 @@ type News {
   author: User!
   createdAt: DateTime!
   updatedAt: DateTime!
+  slug: String!
 }
 
 """
@@ -47,6 +48,7 @@ type Query {
   getNewestArticles: [News!]!
   getArticle(id: String!): News!
   news(page: Int!, limit: Int!, author: String, search: String, sort: String): NewsPaginationResponse!
+  getArticleBySlug(slug: String!): News
   getAllUsers: [User!]!
   getUserByEmail(email: String!): User!
 }
@@ -54,7 +56,7 @@ type Query {
 type Mutation {
   createArticle(data: CreateArticleDto!): News!
   deleteArticle(id: String!): Boolean!
-  changeArticle(id: String!, data: UpdateArticleInput!): News
+  changeArticle(id: String!, data: UpdateArticleInput!): News!
   createUser(data: CreateUser!): AuthTokens!
   updateUser(id: String!, data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!

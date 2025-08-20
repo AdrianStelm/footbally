@@ -21,4 +21,7 @@ export class News {
 
     @Field(() => Date)
     updatedAt: Date
+
+    @Field()
+    slug: string;
 }

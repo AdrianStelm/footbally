@@ -2,27 +2,27 @@ import { CreateUser, UpdateUser, User } from './user.graphql.model';
 import { UserService } from './user.service';
 import { Query, Mutation, Args, Resolver, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { AuthTokens } from 'src/auth/auth-tokens.model';
 import { AuthService } from 'src/auth/auth.service';
 import { Response } from 'express';
-
+import { JwtGuard } from 'src/auth/jwt.guard';
+import { Role } from '@prisma/client';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService, private readonly authService: AuthService) { }
 
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Query(() => [User])
   async getAllUsers(): Promise<User[] | null> {
     return await this.userService.getAll()
   }
 
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Query(() => User)
   async getUserByEmail(@Args('email') email: string): Promise<User | null> {
     return await this.userService.findByEmail(email)
@@ -47,15 +47,15 @@ export class UserResolver {
   }
 
 
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN', 'USER')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => User)
   async updateUser(@Args('id') id: string, @Args('data') data: UpdateUser): Promise<User> {
     return await this.userService.updateById(id, data)
   }
 
-  @UseGuards(RolesGuard, GqlAuthGuard)
-  @Roles('ADMIN', 'USER')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => Boolean)
   async deleteUser(@Args('id') id: string): Promise<boolean> {
     await this.userService.deleteById(id)

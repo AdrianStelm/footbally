@@ -26,6 +26,7 @@ model Article {
   authorId  String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  slug      String   @unique
 }
 
 model User {
