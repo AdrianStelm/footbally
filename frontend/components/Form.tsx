@@ -1,15 +1,26 @@
 "use client";
 import { FieldConfig } from "../types/formTypes";
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 
 interface AuthFormProps {
     fields: FieldConfig[];
     onSubmit: (data: any) => void;
     buttonText: string;
+    defaultValues?: Record<string, any>; // <- додаємо defaultValues
 }
 
-export default function Form({ fields, onSubmit, buttonText }: AuthFormProps) {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+export default function Form({ fields, onSubmit, buttonText, defaultValues }: AuthFormProps) {
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+        defaultValues,
+    });
+
+    // якщо defaultValues змінюються після завантаження, оновлюємо форму
+    useEffect(() => {
+        if (defaultValues) {
+            reset(defaultValues);
+        }
+    }, [defaultValues, reset]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="">
@@ -34,10 +45,7 @@ export default function Form({ fields, onSubmit, buttonText }: AuthFormProps) {
                     )}
                 </div>
             ))}
-            <button
-                type="submit"
-                className="p-5"
-            >
+            <button type="submit" className="p-5">
                 {buttonText}
             </button>
         </form>

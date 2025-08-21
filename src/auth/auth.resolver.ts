@@ -41,8 +41,7 @@ export class AuthResolver {
     return tokens;
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(Role.USER, Role.ADMIN)
+
   @Mutation(() => AuthTokens)
   async refreshTokens(@Context() ctx): Promise<AuthTokens> {
     const token = ctx.req.cookies['refresh_token'];

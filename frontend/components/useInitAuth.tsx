@@ -1,13 +1,14 @@
+"use client";
+
 import { useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
-import { refreshClient } from "../apollo-client-refresh";
 import { gql } from "@apollo/client";
+import { client } from "../apollo-client";
 
 const REFRESH_TOKENS = gql`
   mutation RefreshTokens {
     refreshTokens {
       access_token
-      refresh_token
       userId
     }
   }
@@ -19,16 +20,17 @@ export const useInitAuth = () => {
     useEffect(() => {
         const init = async () => {
             try {
-                const { data } = await refreshClient.mutate({ mutation: REFRESH_TOKENS });
+                const { data } = await client.mutate({ mutation: REFRESH_TOKENS });
                 if (data?.refreshTokens) {
                     setAuth(data.refreshTokens.access_token, data.refreshTokens.userId);
-                } else {
-                    setInitialized();
                 }
-            } catch {
+            } catch (e) {
+                console.log("User not logged in or refresh failed", e);
+            } finally {
                 setInitialized();
             }
         };
+
         init();
     }, [setAuth, setInitialized]);
 };

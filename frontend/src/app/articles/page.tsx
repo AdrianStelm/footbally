@@ -1,8 +1,6 @@
 import { gql } from "@apollo/client";
 import client from "../../../apollo-client";
-import { Article as ArticleComponent } from "../../../components/Article";
-import Link from "next/link";
-
+import ArticleCard from "../../../components/Article";
 
 const GET_ARTICLES = gql`
   query getNewestArticles {
@@ -12,7 +10,7 @@ const GET_ARTICLES = gql`
       text
       slug
       author {
-        id    
+        id
         username
       }
       createdAt
@@ -25,40 +23,38 @@ interface Article {
     id: string;
     title: string;
     text: string;
-    author: { id: string, username: string };
+    author: { id: string; username: string };
     createdAt: string;
     updatedAt: string;
-    slug: string
+    slug: string;
 }
 
 interface GetNewestArticlesData {
     getNewestArticles: Article[];
 }
 
-export const revalidate = 100;
+export const revalidate = 1;
 
 export default async function Page() {
     const { data } = await client.query<GetNewestArticlesData>({
         query: GET_ARTICLES,
+        fetchPolicy: "no-cache"
     });
 
-
     return (
-        <div>
+        <div className="space-y-4">
             {data.getNewestArticles.map((article) => (
-                <Link key={article.id} href={`/articles/${article.slug}`}>
-                    <ArticleComponent
-                        id={article.id}
-                        title={article.title}
-                        text={article.text}
-                        author={article.author}
-                        createdAt={new Date(article.createdAt)}
-                        updatedAt={new Date(article.updatedAt)}
-                    />
-                </Link>
+                <ArticleCard
+                    key={article.id}
+                    id={article.id}
+                    slug={article.slug}
+                    title={article.title}
+                    text={article.text}
+                    author={article.author}
+                    createdAt={new Date(article.createdAt)}
+                    updatedAt={new Date(article.updatedAt)}
+                />
             ))}
         </div>
-
     );
 }
-

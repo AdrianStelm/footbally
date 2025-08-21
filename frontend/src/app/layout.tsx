@@ -5,7 +5,6 @@ import "./globals.css";
 import { Providers } from "../../providers";
 import Header from "../../components/Header";
 
-
 const actor = Actor({
   subsets: ["latin"],
   weight: ["400"],
@@ -22,6 +21,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
 
   return (
     <html lang="en">

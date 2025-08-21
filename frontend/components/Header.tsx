@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useLogout } from "../hooks/useLogout";
 import { useInitAuth } from "./useInitAuth";
 
+
 export default function Header() {
+
+    useInitAuth()
     const logout = useLogout();
     const { accessToken, userId, initialized } = useAuthStore();
-    useInitAuth();
 
     if (!initialized) return null;
 
