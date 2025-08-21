@@ -116,7 +116,6 @@ export class NewsService {
   async deleteById(id: string, userId: string) {
     const article = await this.prisma.article.findUnique({ where: { id } });
     if (!article) throw new NotFoundException('Article not found');
-    console.log('article.authorId =', article?.authorId, 'userId from token =', userId);
     if (article.authorId !== userId) throw new ForbiddenException('Not your article');
 
     return this.prisma.article.delete({ where: { id } });

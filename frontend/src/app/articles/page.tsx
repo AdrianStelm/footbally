@@ -33,7 +33,7 @@ interface GetNewestArticlesData {
     getNewestArticles: Article[];
 }
 
-export const revalidate = 1;
+export const revalidate = 50;
 
 export default async function Page() {
     const { data } = await client.query<GetNewestArticlesData>({

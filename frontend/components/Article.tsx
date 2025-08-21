@@ -38,12 +38,11 @@ export default function ArticleCard({
     const handleDelete = async () => {
         if (!confirm("Ви впевнені, що хочете видалити статтю?")) return;
         await deleteArticle({ variables: { id } });
-        router.refresh(); // оновлює список після видалення
+        router.refresh();
     };
 
     return (
         <div className="p-4 border rounded-lg shadow-sm">
-            {/* Клікабельна частина */}
             <Link href={`/articles/${slug}`}>
                 <h2 className="text-xl font-bold hover:underline">{title}</h2>
                 <p className="text-gray-700">{text}</p>
@@ -53,7 +52,6 @@ export default function ArticleCard({
                 Автор: {author.username} | {createdAt.toLocaleDateString("uk-UA")}
             </div>
 
-            {/* Кнопки залишаються незалежні */}
             {currentUserId === author.id && (
                 <div className="flex gap-2 mt-3">
                     <button

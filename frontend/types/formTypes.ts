@@ -1,6 +1,6 @@
 export type FieldConfig = {
     name: string;
-    label: string;
+    label?: string;
     type: "text" | "email" | "password";
     placeholder?: string;
     required?: boolean;

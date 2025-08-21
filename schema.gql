@@ -43,6 +43,15 @@ type AuthTokens {
   userId: String!
 }
 
+type Comment {
+  id: ID!
+  text: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  author: User!
+  article: News!
+}
+
 type Query {
   getAllArticles: [News!]!
   getNewestArticles: [News!]!
@@ -51,6 +60,7 @@ type Query {
   getArticleBySlug(slug: String!): News
   getAllUsers: [User!]!
   getUserByEmail(email: String!): User!
+  commentsByArticle(articleId: String!): [Comment!]!
 }
 
 type Mutation {
@@ -65,6 +75,8 @@ type Mutation {
   logout(userId: String!): Boolean!
   requestPasswordReset(email: String!): Boolean!
   passwordReset(token: String!, newPassword: String!): Boolean!
+  addComment(data: CreateCommentInput!): Comment!
+  deleteComment(id: String!): Boolean!
 }
 
 input CreateArticleDto {
@@ -91,4 +103,9 @@ input UpdateUser {
   password: String
   username: String
   role: Role = USER
+}
+
+input CreateCommentInput {
+  text: String!
+  articleId: String!
 }

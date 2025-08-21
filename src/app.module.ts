@@ -7,6 +7,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     NewsModule,
     UserModule,
-    AuthModule
+    AuthModule,
+    CommentModule
   ],
   controllers: [AppController],
   providers: [AppService],
