@@ -171,7 +171,6 @@ export class NewsService {
     });
   }
 
-
   async countLikes(articleId: string) {
     return this.prisma.like.count({
       where: { articleId },

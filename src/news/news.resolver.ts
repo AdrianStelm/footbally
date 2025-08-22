@@ -82,4 +82,17 @@ export class NewsResolver {
     return this.newsService.countLikes(article.id);
   }
 
+  @Query(() => NewsPaginationResponse)
+  async articlesPaginated(
+    @Args() args: NewsPaginationArgs,
+  ): Promise<NewsPaginationResponse> {
+    const result = await this.newsService.findAll(args);
+    return {
+      items: result.items,
+      totalItems: result.totalItems,
+      totalPages: result.totalPages,
+      currentPage: result.currentPage,
+    };
+  }
+
 }
