@@ -4,12 +4,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { gql, useMutation } from "@apollo/client";
 import { useAuthStore } from "../store/authStore";
+import { useState } from "react";
 
 const DELETE_ARTICLE = gql`
   mutation DeleteArticle($id: String!) {
     deleteArticle(id: $id)
   }
 `;
+
+const LIKE_ARTICLE = gql`
+  mutation LikeArticle($data: CreateLikeInput!) {
+    LikeArticle(data: $data) {
+      id
+      likesCount
+    }
+  }
+`;
+
+
 
 interface Props {
     id: string;
@@ -19,6 +31,7 @@ interface Props {
     author: { id: string; username: string };
     createdAt: Date;
     updatedAt: Date;
+    likesCount: number;
 }
 
 export default function ArticleCard({
@@ -29,11 +42,24 @@ export default function ArticleCard({
     author,
     createdAt,
     updatedAt,
+    likesCount
 }: Props) {
     const router = useRouter();
     const currentUserId = useAuthStore((s) => s.userId);
 
     const [deleteArticle] = useMutation(DELETE_ARTICLE);
+    const [likeArticle, { loading }] = useMutation(LIKE_ARTICLE);
+    const [likes, setLikes] = useState(likesCount);
+
+    const handleLike = async () => {
+        const { data } = await likeArticle({
+            variables: { data: { articleId: id } },
+        });
+
+        if (data?.LikeArticle) {
+            setLikes(data.LikeArticle.likesCount);
+        }
+    };
 
     const handleDelete = async () => {
         if (!confirm("Ви впевнені, що хочете видалити статтю?")) return;
@@ -68,6 +94,9 @@ export default function ArticleCard({
                     </button>
                 </div>
             )}
+            <button onClick={handleLike} disabled={loading} className="mt-2 px-3 py-1 rounded bg-blue-500 text-white">
+                ❤️ {likes}
+            </button>
         </div>
     );
 }

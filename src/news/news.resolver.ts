@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ResolveField, Parent, Int } from '@nestjs/graphql';
 import { NewsService } from './news.service';
 import { News } from './news.model';
 import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
@@ -10,6 +10,7 @@ import { Role } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { NewsPaginationArgs } from './news-pagination.args';
 import { NewsPaginationResponse } from './news-pagination.response';
+import { CreateLikeInput } from './news-likes.entity';
 
 @Resolver(() => News)
 export class NewsResolver {
@@ -68,5 +69,17 @@ export class NewsResolver {
     return this.newsService.changeById(id, data, userId);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
+  @Mutation(() => News)
+  async LikeArticle(@Args('data') data: CreateLikeInput, @CurrentUser('sub') userId: string) {
+    return this.newsService.toggleLike(userId, data.articleId)
+  }
+
+
+  @ResolveField(() => Int)
+  async likesCount(@Parent() article: News): Promise<number> {
+    return this.newsService.countLikes(article.id);
+  }
 
 }

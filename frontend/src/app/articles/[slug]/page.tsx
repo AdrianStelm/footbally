@@ -18,8 +18,12 @@ const GET_ARTICLE_BY_SLUG = gql`
   }
 `;
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+interface ArticlePageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const { slug } = await params;
 
   const { data } = await client.query({
     query: GET_ARTICLE_BY_SLUG,

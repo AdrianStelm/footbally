@@ -23,6 +23,7 @@ type News {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
+  likesCount: Int!
 }
 
 """
@@ -67,6 +68,7 @@ type Mutation {
   createArticle(data: CreateArticleDto!): News!
   deleteArticle(id: String!): Boolean!
   changeArticle(id: String!, data: UpdateArticleInput!): News!
+  LikeArticle(data: CreateLikeInput!): News!
   createUser(data: CreateUser!): AuthTokens!
   updateUser(id: String!, data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
@@ -89,6 +91,10 @@ input UpdateArticleInput {
   title: String
   text: String
   authorId: String
+}
+
+input CreateLikeInput {
+  articleId: ID!
 }
 
 input CreateUser {

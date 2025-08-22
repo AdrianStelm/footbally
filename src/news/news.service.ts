@@ -113,13 +113,27 @@ export class NewsService {
     });
   }
 
-  async deleteById(id: string, userId: string) {
-    const article = await this.prisma.article.findUnique({ where: { id } });
+  async deleteById(articleId: string, userId: string) {
+    const article = await this.prisma.article.findUnique({
+      where: { id: articleId },
+    });
+
     if (!article) throw new NotFoundException('Article not found');
     if (article.authorId !== userId) throw new ForbiddenException('Not your article');
 
-    return this.prisma.article.delete({ where: { id } });
+    await this.prisma.comment.deleteMany({
+      where: { articleId },
+    });
+
+    await this.prisma.like.deleteMany({
+      where: { articleId },
+    });
+
+    return this.prisma.article.delete({
+      where: { id: articleId },
+    });
   }
+
 
   async changeById(id: string, data: UpdateArticleDto, userId: string) {
     const article = await this.prisma.article.findUnique({ where: { id } });
@@ -129,5 +143,39 @@ export class NewsService {
     return this.prisma.article.update({ where: { id }, data });
   }
 
+  async toggleLike(userId: string, articleId: string) {
+    const existing = await this.prisma.like.findUnique({
+      where: {
+        userId_articleId: {
+          userId,
+          articleId,
+        },
+      },
+    });
+
+    if (existing) {
+      await this.prisma.like.delete({
+        where: { id: existing.id },
+      });
+    } else {
+      await this.prisma.like.create({
+        data: {
+          userId,
+          articleId,
+        },
+      });
+    }
+
+    return this.prisma.article.findUnique({
+      where: { id: articleId },
+    });
+  }
+
+
+  async countLikes(articleId: string) {
+    return this.prisma.like.count({
+      where: { articleId },
+    });
+  }
 
 }

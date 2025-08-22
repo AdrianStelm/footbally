@@ -28,6 +28,7 @@ model Article {
   updatedAt DateTime  @updatedAt
   slug      String    @unique
   comments  Comment[]
+  Like      Like[]
 }
 
 model User {
@@ -42,6 +43,7 @@ model User {
   resetPasswordExpires DateTime?
   articles             Article[]
   comments             Comment[]
+  Like                 Like[]
 }
 
 model Comment {
@@ -53,4 +55,15 @@ model Comment {
   articleId String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Like {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  articleId String @db.ObjectId
+  userId    String @db.ObjectId
+
+  user    User    @relation(fields: [userId], references: [id])
+  article Article @relation(fields: [articleId], references: [id])
+
+  @@unique([userId, articleId])
 }
