@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Article } from '@prisma/client'
 import { CreateArticleDto, UpdateArticleDto } from './news.dto';
 import { Prisma } from '@prisma/client';
 import { NewsPaginationArgs } from './news-pagination.args';
@@ -30,15 +29,18 @@ export class NewsService {
   async getArticles(params?: {
     take?: number;
     skip?: number;
-    orderBy?: { [P in keyof Article]?: 'asc' | 'desc' };
-    where?: any;
   }): Promise<ArticleWithAuthor[]> {
     return this.prisma.article.findMany({
       take: params?.take,
       skip: params?.skip,
-      orderBy: params?.orderBy,
-      where: params?.where,
-      include: { author: true },
+      orderBy: [
+        { Like: { _count: 'desc' } },
+        { createdAt: 'desc' },
+      ],
+      include: {
+        author: true,
+        _count: { select: { Like: true } },
+      },
     });
   }
 
@@ -176,5 +178,27 @@ export class NewsService {
       where: { articleId },
     });
   }
+
+  async getTopLikedLast7Days(): Promise<ArticleWithAuthor[]> {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return this.prisma.article.findMany({
+      where: {
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+      orderBy: [
+        { Like: { _count: 'desc' } },
+      ],
+      take: 5,
+      include: {
+        author: true,
+        _count: { select: { Like: true } },
+      },
+    });
+  }
+
 
 }

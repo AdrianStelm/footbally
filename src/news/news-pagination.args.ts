@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-// dto/news-pagination.args.ts
 import { ArgsType, Field, Int } from '@nestjs/graphql';
 import { Min, IsString, IsOptional } from 'class-validator';
 

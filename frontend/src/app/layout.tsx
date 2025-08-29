@@ -4,6 +4,7 @@ import { Actor } from "next/font/google";
 import "./globals.css";
 import { Providers } from "../../providers";
 import Header from "../../components/Header";
+import { Toaster } from 'sonner'
 
 const actor = Actor({
   subsets: ["latin"],
@@ -25,12 +26,13 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${actor.variable} antialiased`}>
+      <body className={`${actor.variable} antialiased min-h-screen flex flex-col `}>
         <Providers>
           <Header></Header>
           {children}
         </Providers>
-        <footer><p>FOOTER</p></footer>
+        <Toaster position="top-right" richColors></Toaster>
+        <footer className="bg-black py-20 text-center text-white"><p>FOOTER</p></footer>
       </body>
     </html>
   );

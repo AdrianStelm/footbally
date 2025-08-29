@@ -20,13 +20,20 @@ export const useInitAuth = () => {
     useEffect(() => {
         const init = async () => {
             try {
-                const { data } = await client.mutate({ mutation: REFRESH_TOKENS });
+                const { data } = await client.mutate({
+                    mutation: REFRESH_TOKENS,
+                    context: {
+                        fetchOptions: {
+                            credentials: "include",
+                        },
+                    },
+                });
+
                 if (data?.refreshTokens) {
                     setAuth(data.refreshTokens.access_token, data.refreshTokens.userId);
                 }
-            } catch (e) {
-                console.log("User not logged in or refresh failed", e);
-            } finally {
+            }
+            finally {
                 setInitialized();
             }
         };

@@ -2,8 +2,8 @@
 import { useAuthStore } from "../store/authStore";
 import Link from "next/link";
 import { useLogout } from "../hooks/useLogout";
-import { useInitAuth } from "./useInitAuth";
-
+import { useInitAuth } from "../hooks/useInitAuth";
+import DropdownList from "./DropdownList";
 
 export default function Header() {
 
@@ -33,6 +33,7 @@ export default function Header() {
                     </>
                 )}
             </div>
+            <DropdownList dropdownCaption="Tables" />
         </header>
     );
 }

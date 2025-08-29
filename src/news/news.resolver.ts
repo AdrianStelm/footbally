@@ -23,7 +23,10 @@ export class NewsResolver {
 
   @Query(() => [News])
   async getNewestArticles(): Promise<News[]> {
-    return this.newsService.getArticles({ orderBy: { createdAt: 'desc' } })
+    return this.newsService.getArticles({
+      take: 7,
+      skip: 0,
+    });
   }
 
   @Query(() => News)
@@ -94,5 +97,27 @@ export class NewsResolver {
       currentPage: result.currentPage,
     };
   }
+
+  @Query(() => [News])
+  async loadMoreArticles(
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('take', { type: () => Int, nullable: true }) take?: number,
+  ): Promise<News[]> {
+    return this.newsService.getArticles({
+      skip,
+      take,
+    });
+  }
+
+  @Query(() => [News])
+  async getTopLikedLast7Days(): Promise<News[]> {
+    return this.newsService.getTopLikedLast7Days();
+  }
+
+
+
+
+
+
 
 }

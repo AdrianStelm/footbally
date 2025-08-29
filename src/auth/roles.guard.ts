@@ -4,6 +4,16 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import * as jwt from 'jsonwebtoken';
 import { ROLES_KEY } from './roles.decorator';
 import { Role } from '@prisma/client';
+import { JwtPayload } from './jwt.guard'; // твій тип payload
+
+interface GqlContext {
+  req: {
+    headers: {
+      authorization?: string;
+    };
+  };
+  user?: JwtPayload;
+}
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -11,26 +21,25 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
-    if (!requiredRoles || requiredRoles.length === 0) return true; // без ролей доступ відкритий
+    if (!requiredRoles || requiredRoles.length === 0) return true;
 
-    // Для GraphQL
-    const ctx = GqlExecutionContext.create(context).getContext();
-    const authHeader = ctx.req.headers['authorization'];
+    const ctx = GqlExecutionContext.create(context).getContext<GqlContext>();
+    const authHeader = ctx.req.headers.authorization;
     if (!authHeader) throw new ForbiddenException('No token provided');
 
     const token = authHeader.split(' ')[1];
     if (!token) throw new ForbiddenException('Invalid token');
 
-    let payload: any;
+    let payload: JwtPayload;
     try {
-      payload = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    } catch (err) {
+      payload = jwt.verify(token, process.env.JWT_SECRET || 'secret') as JwtPayload;
+    } catch {
       throw new ForbiddenException('Token expired or invalid');
     }
 
-    ctx.user = payload; // додаємо юзера в контекст
+    ctx.user = payload;
 
-    if (!requiredRoles.includes(payload.role)) {
+    if (!requiredRoles.includes(payload.role! as Role)) {
       throw new ForbiddenException('Insufficient permissions');
     }
 

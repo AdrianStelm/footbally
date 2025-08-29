@@ -60,6 +60,8 @@ type Query {
   news(page: Int!, limit: Int!, author: String, search: String, sort: String): NewsPaginationResponse!
   getArticleBySlug(slug: String!): News
   articlesPaginated(page: Int!, limit: Int!, author: String, search: String, sort: String): NewsPaginationResponse!
+  loadMoreArticles(skip: Int, take: Int): [News!]!
+  getTopLikedLast7Days: [News!]!
   getAllUsers: [User!]!
   getUserByEmail(email: String!): User!
   commentsByArticle(articleId: String!): [Comment!]!

@@ -5,6 +5,7 @@ import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
 import { gql, useMutation } from '@apollo/client';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const fields: FieldConfig[] = [
     {
@@ -25,12 +26,11 @@ export default function Page({ searchParams }: { searchParams: Promise<{ token?:
     const params = use(searchParams);
     const token = params.token;
 
-    const [setNewPassword, { loading, error, data }] = useMutation(NEW_PASSWORD);
+    const [setNewPassword, { loading }] = useMutation(NEW_PASSWORD);
     const router = useRouter()
 
     async function sendPassword(formData: { password: string }, token?: string) {
         if (!token) {
-            console.error("No token found!");
             return;
         }
 
@@ -41,19 +41,21 @@ export default function Page({ searchParams }: { searchParams: Promise<{ token?:
                     newPassword: formData.password,
                 },
             });
-            alert("Password changed successfully!");
+            toast.success("Password changed successfully!");
             router.replace('/')
         } catch (err) {
-            console.error(err);
-            alert("Failed to reset password");
+            const error = err as Error
+            toast.error(`Failed to reset password${error.message}`);
         }
     }
 
     return (
-        <Form
-            fields={fields}
-            onSubmit={(formData) => sendPassword(formData, token)}
-            buttonText={loading ? "Changing..." : "Change password"}
-        />
+        <main className="flex h-screen flex-col items-center justify-center">
+            <Form<{ password: string }>
+                fields={fields}
+                onSubmit={(formData) => sendPassword(formData, token)}
+                buttonText={loading ? "Changing..." : "Change password"}
+            />
+        </main>
     );
 }

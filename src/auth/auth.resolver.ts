@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
+import { Response, Request } from 'express';
 
 @Resolver()
 export class AuthResolver {
@@ -23,14 +24,13 @@ export class AuthResolver {
   async login(
     @Args('email') email: string,
     @Args('password') password: string,
-    @Context() ctx
+    @Context() ctx: { req: Request; res: Response }
   ): Promise<AuthTokens> {
     const user = await this.authService.validateUser(email, password);
     if (!user) throw new Error('Invalid credentials');
 
     const tokens = await this.authService.login(user);
 
-    // Встановлюємо refresh token у cookie
     ctx.res.cookie('refresh_token', tokens.refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -43,9 +43,12 @@ export class AuthResolver {
 
 
   @Mutation(() => AuthTokens)
-  async refreshTokens(@Context() ctx): Promise<AuthTokens> {
-    const token = ctx.req.cookies['refresh_token'];
+  async refreshTokens(@Context() ctx: { req: Request; res: Response }): Promise<AuthTokens> {
+    const tokenFromCookie: unknown = ctx.req.cookies['refresh_token'];
+    const token: string | undefined = typeof tokenFromCookie === 'string' ? tokenFromCookie : undefined;
+
     if (!token) throw new Error('No refresh token');
+
     const tokens = await this.authService.refreshTokens(token);
 
     ctx.res.cookie('refresh_token', tokens.refresh_token, {
@@ -58,10 +61,11 @@ export class AuthResolver {
     return tokens;
   }
 
+
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => Boolean)
-  async logout(@Args('userId') userId: string, @Context() ctx): Promise<boolean> {
+  async logout(@Args('userId') userId: string, @Context() ctx: { req: Request; res: Response }): Promise<boolean> {
     await this.userService.clearRefreshToken(userId);
     ctx.res.clearCookie('refresh_token', {
       httpOnly: true,
@@ -76,13 +80,14 @@ export class AuthResolver {
     const user = await this.userService.findByEmail(email);
     if (!user) return true;
 
-    const resetToken = randomBytes(32).toString('hex');
+    const resetToken: string = randomBytes(32).toString('hex');
     const expireTime = new Date(Date.now() + 15 * 60 * 1000);
     await this.userService.setResetToken(user.id, await bcrypt.hash(resetToken, 10), expireTime);
     await this.emailService.sendResetEmail(user.email, resetToken);
 
     return true;
   }
+
 
   @Mutation(() => Boolean)
   async passwordReset(

@@ -2,6 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { IUser } from './types/user.interface';
+import { Role } from '@prisma/client';
+
+interface JwtPayload {
+    sub: string;
+    email: string;
+    role: Role
+}
 
 
 @Injectable()
@@ -22,7 +30,7 @@ export class AuthService {
         return result;
     }
 
-    async login(user: any) {
+    async login(user: Pick<IUser, 'id' | 'email' | 'role'>) {
         const payload = { email: user.email, sub: user.id, role: user.role };
 
         const access_token = this.jwtService.sign(payload, {
@@ -46,7 +54,7 @@ export class AuthService {
 
     async refreshTokens(refreshToken: string) {
         try {
-            const payload = this.jwtService.verify(refreshToken, {
+            const payload: JwtPayload = this.jwtService.verify(refreshToken, {
                 secret: process.env.JWT_SECRET_REFRESH_TOKEN,
             });
 

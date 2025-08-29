@@ -35,15 +35,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   if (!article) return notFound();
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">{article.title}</h1>
-      <p className="text-gray-500">
+    <div className="p-4 flex-1">
+      <h2 className="text-4xl font-bold">{article.title}</h2>
+      <p>
         By {article.author.username} |{" "}
         {new Date(article.createdAt).toLocaleDateString()}
       </p>
-      <div className="mt-4">{article.text}</div>
+      <p className="mt-4">{article.text}</p>
 
-      <Comments articleId={article.id} author={article.author.id} />
+      <Comments articleId={article.id} />
     </div>
   );
 }

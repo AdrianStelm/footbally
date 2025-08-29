@@ -1,15 +1,19 @@
 // current-user.decorator.ts
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { JwtPayload } from './jwt.guard'; // тип з твого JwtGuard
+import { JwtPayload } from './jwt.guard';
 
 export const CurrentUser = createParamDecorator(
     (data: keyof JwtPayload | undefined, context: ExecutionContext) => {
-        const ctx = GqlExecutionContext.create(context).getContext();
-        const user: JwtPayload = ctx.user;
+        const ctx = GqlExecutionContext.create(context).getContext() as { user?: JwtPayload };
+        const user = ctx.user;
 
-        // Якщо передано ключ, повертаємо конкретне поле
-        if (data) return user[data];
-        return user; // інакше повертаємо весь payload
+        if (!user) return null;
+
+        if (data) {
+            return user[data] ?? null; // повертаємо конкретне поле або null
+        }
+
+        return user; // весь payload
     },
 );

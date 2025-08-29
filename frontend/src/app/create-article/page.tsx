@@ -1,9 +1,10 @@
 "use client";
 
-import Form from "../../../components/Form";
-import { FieldConfig } from "../../../types/formTypes";
 import { gql, useMutation } from "@apollo/client";
 import { useAuthStore } from "../../../store/authStore";
+import { useCheckAuth } from "../../../hooks/useCheckAuth";
+import { toast } from "sonner";
+import ArticleForm from "../../../components/ArticleForm";
 
 const CREATE_ARTICLE = gql`
   mutation CreateArticle($data: CreateArticleDto!) {
@@ -15,27 +16,18 @@ const CREATE_ARTICLE = gql`
   }
 `;
 
-const createArticleFields: FieldConfig[] = [
-  { name: "title", label: "Input title", type: "text", placeholder: "Title", required: true },
-  { name: "text", label: "Input text", type: "text", placeholder: "Text", required: true },
-];
+export default function CreateArticlePage() {
+  const { accessToken, userId } = useAuthStore();
+  useCheckAuth();
 
-export default function Page() {
   const [createArticle] = useMutation(CREATE_ARTICLE);
 
-  const handleSubmit = async (formData: Record<string, any>) => {
-    const { accessToken, userId } = useAuthStore.getState();
-    if (!accessToken || !userId) {
-      alert("User is not authenticated yet");
-      return;
-    }
-
+  const handleSubmit = async (data: { title: string; text: string }) => {
     try {
       await createArticle({
         variables: {
           data: {
-            title: formData.title,
-            text: formData.text,
+            ...data,
             authorId: userId,
           },
         },
@@ -45,19 +37,16 @@ export default function Page() {
           },
         },
       });
-
-      alert("Article created! ✅");
-      // Можна ще зробити редірект на список статей
-      // router.push("/articles") якщо Next.js router
     } catch (err) {
-      console.error(err);
-      alert("Error creating article ❌");
+      const error = err as Error
+      toast.error(error.message);
     }
   };
 
   return (
-    <div>
-      <Form fields={createArticleFields} onSubmit={handleSubmit} buttonText="Create" />
+    <div className="flex-1 w-full max-w-3xl mx-auto mt-10 p-6">
+      <h2 className="text-5xl font-bold mb-4">Create Article</h2>
+      <ArticleForm onSubmit={handleSubmit} />
     </div>
   );
 }

@@ -20,7 +20,7 @@ const authLink = setContext((_, { headers }) => {
 
 const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     if (graphQLErrors) {
-        for (let err of graphQLErrors) {
+        for (const err of graphQLErrors) {
             if (err.extensions?.code === "UNAUTHENTICATED") {
                 return fromPromise(
                     fetch("http://localhost:4000/graphql", {

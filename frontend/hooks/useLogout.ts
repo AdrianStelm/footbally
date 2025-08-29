@@ -16,13 +16,10 @@ export const useLogout = () => {
 
   const logout = async (userId: string) => {
     try {
-      // Виконуємо серверний логаут (очистка cookie і БД)
       await logoutMutation({ variables: { userId } });
 
-      // Очищуємо стан на фронті
       authStore.clearAuth();
 
-      // Редіректимо на головну
       router.replace('/');
     } catch (err) {
       console.error('Logout failed', err);

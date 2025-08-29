@@ -1,51 +1,62 @@
 "use client";
 import { FieldConfig } from "../types/formTypes";
-import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useForm, SubmitHandler, Path } from "react-hook-form";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
-interface AuthFormProps {
+interface AuthFormProps<TFormValues extends Record<string, string>> {
     fields: FieldConfig[];
-    onSubmit: (data: any) => void;
+    onSubmit: SubmitHandler<TFormValues>;
     buttonText: string;
-    defaultValues?: Record<string, any>; // <- додаємо defaultValues
 }
 
-export default function Form({ fields, onSubmit, buttonText, defaultValues }: AuthFormProps) {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        defaultValues,
-    });
-
-    // якщо defaultValues змінюються після завантаження, оновлюємо форму
-    useEffect(() => {
-        if (defaultValues) {
-            reset(defaultValues);
-        }
-    }, [defaultValues, reset]);
+export default function Form<TFormValues extends Record<string, string>>({
+    fields,
+    onSubmit,
+    buttonText,
+}: AuthFormProps<TFormValues>) {
+    const { register, handleSubmit, formState: { errors } } = useForm<TFormValues>();
+    const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="">
-            {fields.map((field) => (
-                <div key={field.name} className="flex flex-col">
-                    <label className="font-medium">{field.label}</label>
-                    <input
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        {...register(field.name, {
-                            required: field.required ? `${field.label} is required` : false,
-                            pattern: field.type === "email"
-                                ? { value: /\S+@\S+\.\S+/, message: "Invalid email format" }
-                                : undefined
-                        })}
-                        className="border rounded p-2"
-                    />
-                    {errors[field.name] && (
-                        <span className="text-red-500 text-sm">
-                            {errors[field.name]?.message as string}
-                        </span>
-                    )}
-                </div>
-            ))}
-            <button type="submit" className="p-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex gap-5 p-10 rounded-3xl flex-col items-center">
+            {fields.map((field) => {
+                const fieldName = field.name as Path<TFormValues>;
+                return (
+                    <div key={field.name} className="flex flex-col items-center relative">
+                        <label className="font-medium">{field.label}</label>
+
+                        <input
+                            type={field.type === "password" && showPassword ? "text" : field.type}
+                            placeholder={field.placeholder}
+                            {...register(fieldName, {
+                                required: field.required ? `${field.label} is required` : false,
+                                pattern: field.type === "email"
+                                    ? { value: /\S+@\S+\.\S+/, message: "Invalid email format" }
+                                    : undefined
+                            })}
+                            className="border-2 border-green-800 focus:ring-2 focus:ring-green-600 rounded p-2 pr-10"
+                        />
+
+                        {field.type === "password" && (
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-2 top-9"
+                            >
+                                {showPassword ? <EyeOff size={20} className="text-green-900" /> : <Eye size={20} className="text-green-900" />}
+                            </button>
+                        )}
+
+                        {errors[fieldName] && (
+                            <span className="text-red-500 text-sm">
+                                {errors[fieldName]?.message as string}
+                            </span>
+                        )}
+                    </div>
+                );
+            })}
+            <button type="submit" className="mt-5 px-10 py-1 text-white bg-black rounded hover:bg-green-700">
                 {buttonText}
             </button>
         </form>

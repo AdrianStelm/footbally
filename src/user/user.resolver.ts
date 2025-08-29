@@ -61,4 +61,5 @@ export class UserResolver {
     await this.userService.deleteById(id)
     return true
   }
+
 }

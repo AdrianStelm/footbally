@@ -5,6 +5,8 @@ import Form from "../../../components/Form";
 import { useMutation, gql } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../../../store/authStore";
+import Link from "next/link";
+import { UserType } from "../../../types/userType";
 
 const registerFields: FieldConfig[] = [
     { name: "username", label: "Write your username", type: "text", required: true },
@@ -28,7 +30,7 @@ export default function Page() {
 
 
 
-    const handleRegister = async (formData: any) => {
+    const handleRegister = async (formData: UserType) => {
         try {
             const result = await registerUser({
                 variables: {
@@ -48,10 +50,17 @@ export default function Page() {
     };
 
     return (
-        <div className="p-4">
-            <Form fields={registerFields} onSubmit={handleRegister} buttonText={loading ? "Loading..." : "Register"} />
-            {error && <p className="text-red-500 mt-2">Error: {error.message}</p>}
-            {data && <p className="text-green-500 mt-2">User created: {data.createUser.username}</p>}
-        </div>
+        <main className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-2 ">
+            <div className="bg-[url('/img/bg.jpg')] bg-cover bg-center py-10 flex gap-30 justify-center flex-col items-center  rounded-2xl">
+                <h2 className="text-5xl md:text-7xl ">Welcome back!</h2>
+                <Link className="px-30 py-4 text-white bg-black rounded-2xl hover:bg-green-700" href='/login'>Sign in</Link>
+            </div>
+            <div className="p-4 rounded-2xl flex justify-center flex-col">
+                <h2 className="text-5xl  text-center">Create account</h2>
+                <Form fields={registerFields} onSubmit={handleRegister} buttonText={loading ? "Loading..." : "Sign up"} />
+                {error && <p className="text-red-500 mt-2">Error: {error.message}</p>}
+                {data && <p className="text-green-500 mt-2">User created: {data.createUser.username}</p>}
+            </div>
+        </main>
     );
 }

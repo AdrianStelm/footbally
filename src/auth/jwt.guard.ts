@@ -10,10 +10,15 @@ export interface JwtPayload {
     role?: string;
 }
 
+interface GqlContext {
+    req: { headers: Record<string, string>;[key: string]: any };
+    user?: JwtPayload;
+}
+
 @Injectable()
 export class JwtGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
-        const ctx = GqlExecutionContext.create(context).getContext();
+        const ctx = GqlExecutionContext.create(context).getContext<GqlContext>();
         const authHeader = ctx.req.headers['authorization'];
         if (!authHeader) throw new UnauthorizedException('No token');
 
@@ -22,6 +27,7 @@ export class JwtGuard implements CanActivate {
 
         try {
             const payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
             ctx.user = payload;
             return true;
         } catch {
