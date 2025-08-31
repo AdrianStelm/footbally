@@ -8,6 +8,12 @@ interface Props {
     dropdownCaption: string;
 }
 
+interface LeaguesApi {
+    idLeague: string;
+    strSport: string;
+    strLeague: string
+}
+
 export default function DropdownList({ dropdownCaption }: Props) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -38,12 +44,12 @@ export default function DropdownList({ dropdownCaption }: Props) {
             <div className={`${open ? "absolute gap-0.5 grid grid-cols-1 bg-neutral-800 p-4 w-max lg:grid-cols-3 lg:gap-2 md:right-5 z-50" : 'hidden'}`}>
                 {data
                     .filter(
-                        (l) =>
+                        (l: LeaguesApi) =>
                             l.strSport === "Soccer" &&
                             l.strLeague !== "_No League" &&
                             l.strLeague !== "Russian Football Premier League"
                     )
-                    .map((l) => (
+                    .map((l: LeaguesApi) => (
                         <Link
                             key={l.idLeague}
                             href={`/leagues/${l.idLeague}`}

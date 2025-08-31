@@ -8,7 +8,7 @@ import { AuthTokens } from 'src/auth/auth-tokens.model';
 import { AuthService } from 'src/auth/auth.service';
 import { Response } from 'express';
 import { JwtGuard } from 'src/auth/jwt.guard';
-import { Role } from '@prisma/client';
+import { Role } from './role.enum';
 
 @Resolver(() => User)
 export class UserResolver {

@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model Article {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   title     String
@@ -37,7 +32,7 @@ model User {
   password             String
   username             String    @unique()
   createdAt            DateTime  @default(now())
-  role                 Role      @default(USER)
+  role                 String    @default("USER")
   refreshToken         String?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?

@@ -3,8 +3,8 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import * as jwt from 'jsonwebtoken';
 import { ROLES_KEY } from './roles.decorator';
-import { Role } from '@prisma/client';
-import { JwtPayload } from './jwt.guard'; // твій тип payload
+import { Role } from 'src/user/role.enum';
+import { JwtPayload } from './jwt.guard';
 
 interface GqlContext {
   req: {

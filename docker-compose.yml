@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  backend:
+    image: username/footbally-backend:latest
+    container_name: nest-backend
+    environment:
+      - PORT=4000
+      - DATABASE_URL=mongodb+srv://admin:admin@cluster0.hv7nfbh.mongodb.net/footbally?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET_ACCES_TOKEN=secret
+      - JWT_SECRET_REFRESH_TOKEN=secret1
+      - JWT_SECRET=jwtsecret
+    ports:
+      - "4000:4000"
+
+  frontend:
+    image: username/footbally-frontend:latest
+    container_name: next-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:4000/graphql
+    ports:
+      - "3000:3000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend

@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto';
 import { JwtGuard } from './jwt.guard';
 import { UseGuards } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Role } from '@prisma/client';
+import { Role } from 'src/user/role.enum';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
 import { Response, Request } from 'express';

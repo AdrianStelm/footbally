@@ -1,10 +1,9 @@
-import { Role } from "@prisma/client";
 
 export interface IUser {
     id: string;
     email: string;
     username: string;
     password: string;
-    role: Role;
+    role: string;
     refreshToken?: string;
 }

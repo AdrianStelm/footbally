@@ -3,8 +3,13 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { useAuthStore } from "./store/authStore";
 
+const API_URL =
+    typeof window === "undefined"
+        ? "http://backend:4000/graphql"
+        : "http://localhost:4000/graphql";
+
 const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: API_URL,
     credentials: "include",
 });
 
@@ -23,7 +28,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
         for (const err of graphQLErrors) {
             if (err.extensions?.code === "UNAUTHENTICATED") {
                 return fromPromise(
-                    fetch("http://localhost:4000/graphql", {
+                    fetch(API_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
@@ -41,7 +46,6 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
                         .then(res => res.json())
                         .then(data => {
                             if (!data.data?.refreshTokens) throw new Error("Refresh failed");
-
                             const { access_token, userId } = data.data.refreshTokens;
                             useAuthStore.getState().setAuth(access_token, userId);
 
@@ -58,9 +62,10 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     }
 });
 
-export const client = new ApolloClient({
+const client = new ApolloClient({
     link: from([errorLink, authLink, httpLink]),
     cache: new InMemoryCache(),
 });
+
 
 export default client;

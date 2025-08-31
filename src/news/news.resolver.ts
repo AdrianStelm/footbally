@@ -6,7 +6,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from 'src/user/role.enum';
 import { UseGuards } from '@nestjs/common';
 import { NewsPaginationArgs } from './news-pagination.args';
 import { NewsPaginationResponse } from './news-pagination.response';

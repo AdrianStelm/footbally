@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { IUser } from './types/user.interface';
-import { Role } from '@prisma/client';
+import { Role } from 'src/user/role.enum';
 
 interface JwtPayload {
     sub: string;

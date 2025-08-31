@@ -43,7 +43,7 @@ export default function FootballTable({ idLeague, season, columns }: Props) {
                                         <Image
                                             height={30}
                                             width={30}
-                                            src={team.strBadge}
+                                            src={team.strBadge.replace("/tiny", "")}
                                             alt="Team logo"
                                             className="mx-auto"
                                         />

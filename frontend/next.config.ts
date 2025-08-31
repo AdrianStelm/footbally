@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "www.thesportsdb.com",
+
       },
     ],
   },
