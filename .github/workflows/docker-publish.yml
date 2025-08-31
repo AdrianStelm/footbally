@@ -36,7 +36,7 @@ jobs:
 
       - name: Build and push backend image
         run: |
-          docker build -t $DOCKERHUB_USERNAME/footbally-backend:latest ./backend
+          docker build -t $DOCKERHUB_USERNAME/footbally-backend:latest .
           docker push $DOCKERHUB_USERNAME/footbally-backend:latest
 
       - name: Build and push frontend image
