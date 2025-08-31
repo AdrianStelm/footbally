@@ -8,6 +8,7 @@ query LoadMoreArticles($skip: Int, $take: Int) {
     id
     title
     text
+    slug
     createdAt
     author { id username }
     likesCount

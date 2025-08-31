@@ -53,14 +53,14 @@ export default function ArticleForm({
                 placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="p-3 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-600 w-full"
+                className="p-3 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-600 w-full"
                 required
             />
             <textarea
                 placeholder="Text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="p-3 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-600 w-full h-40 resize-y"
+                className="p-3 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-600 w-full h-40 resize-y"
                 required
             />
             <button

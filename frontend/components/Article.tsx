@@ -57,7 +57,7 @@ export default function ArticleCard({
 
     return (
         <div className="lg:flex justify-center">
-            <article className="p-4 rounded-lg bg- lg:basis-200">
+            <article className="p-4 min-h-[220px] rounded-lg bg- lg:basis-200">
                 <Link href={`/articles/${slug}`}>
                     <h2 className="text-2xl font-bold hover:underline">{(title.length >= 20) ? title.slice(1, 20) + '...' : title}</h2>
                     <p className="break-words">{(text.length >= 50) ? text.slice(1, 51) + '...' : text}</p>

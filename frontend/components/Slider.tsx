@@ -32,7 +32,7 @@ export default function Slider<T>({
                 style={{ transform: `translateX(-${current * 100}%)` }}
             >
                 {items.map((item, i) => (
-                    <div key={i} className="w-full flex-shrink-0">
+                    <div key={i} className="w-full px-15 flex-shrink-0">
                         {renderItem(item)}
                     </div>
                 ))}
@@ -42,13 +42,13 @@ export default function Slider<T>({
                 onClick={() =>
                     setCurrent((prev) => (prev - 1 + items.length) % items.length)
                 }
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black text-white p-2 rounded-full opacity-70 hover:opacity-100"
+                className="absolute  top-1/2 -translate-y-1/2 bg-black text-white p-2 rounded-full opacity-70 hover:opacity-100"
             >
                 <ChevronLeft />
             </button>
             <button
                 onClick={() => setCurrent((prev) => (prev + 1) % items.length)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black text-white p-2 rounded-full opacity-70 hover:opacity-100"
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-black text-white p-2 rounded-full opacity-70 hover:opacity-100"
             >
                 <ChevronRight />
             </button>

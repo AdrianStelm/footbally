@@ -26,10 +26,10 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${actor.variable} antialiased min-h-screen flex flex-col `}>
+      <body className={`${actor.variable} antialiased min-h-screen flex flex-col`}>
         <Providers>
           <Header></Header>
-          {children}
+          <main className="pt-25 flex-1">{children}</main>
         </Providers>
         <Toaster position="top-right" richColors></Toaster>
         <footer className="bg-black py-20 text-center text-white"><p>FOOTER</p></footer>

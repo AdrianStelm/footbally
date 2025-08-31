@@ -12,3 +12,4 @@ export type TeamType = {
     intGoalDifference: number,
     intPoints: number,
 }
+

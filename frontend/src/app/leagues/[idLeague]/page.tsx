@@ -6,8 +6,25 @@ export default async function LeaguePage({ params }: { params: Promise<{ idLeagu
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">League Table</h1>
-            <FootballTable idLeague={idLeague} season={season} />
+            <h2 className="text-4xl font-bold mb-4">League Table</h2>
+            <FootballTable
+                idLeague={idLeague}
+                season={season}
+                columns={[
+                    "intRank",
+                    "strBadge",
+                    "strTeam",
+                    "intPlayed",
+                    "intWin",
+                    "intDraw",
+                    "intLoss",
+                    "intGoalsFor",
+                    "intGoalsAgainst",
+                    "intGoalDifference",
+                    "intPoints",
+                ]}
+            />
+
         </div>
     );
 }
