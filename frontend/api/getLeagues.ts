@@ -20,3 +20,15 @@ export async function getLeagueTable(idLeague: string, season: string) {
     }
 
 }
+
+
+export async function getLeaguesEvents(idLeague: string) {
+    try {
+        const res = await axios.get(`https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=${idLeague}`)
+        return res.data.events;
+
+    } catch (err) {
+        console.log(err)
+        return null
+    }
+}

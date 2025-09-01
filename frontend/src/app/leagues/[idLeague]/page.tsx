@@ -1,4 +1,5 @@
 import FootballTable from "../../../../components/Table";
+import EventsLeagueCard from "../../../../components/EventsLeagueCard";
 
 export default async function LeaguePage({ params }: { params: Promise<{ idLeague: string }> }) {
     const { idLeague } = await params;
@@ -24,7 +25,7 @@ export default async function LeaguePage({ params }: { params: Promise<{ idLeagu
                     "intPoints",
                 ]}
             />
-
+            <EventsLeagueCard idLeague={idLeague}></EventsLeagueCard>
         </div>
     );
 }

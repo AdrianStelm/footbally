@@ -1,5 +1,6 @@
 import HomeClient from "../../components/HomeClient";
 import { ApolloClient, InMemoryCache, createHttpLink, gql } from "@apollo/client";
+import { API_URL } from "../../consts/API_URL";
 
 const GET_ARTICLES = gql`
 query LoadMoreArticles($skip: Int, $take: Int) {
@@ -20,7 +21,7 @@ export const revalidate = 120;
 export default async function Home() {
   const ssrClient = new ApolloClient({
     link: createHttpLink({
-      uri: process.env.NEXT_PUBLIC_API_URL || "http://host.docker.internal:4000/graphql",
+      uri: API_URL,
       credentials: "include",
     }),
     cache: new InMemoryCache(),

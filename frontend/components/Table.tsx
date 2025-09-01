@@ -7,7 +7,7 @@ import { TeamType } from "../types/footballApiType";
 interface Props {
     idLeague: string;
     season: string;
-    columns: (keyof TeamType)[]; // вибрані колонки
+    columns: (keyof TeamType)[];
 }
 
 export default function FootballTable({ idLeague, season, columns }: Props) {
@@ -21,7 +21,7 @@ export default function FootballTable({ idLeague, season, columns }: Props) {
 
     return (
         <div className="overflow-x-auto flex justify-center">
-            <table className=" text-center border border-green-800  shadow">
+            <table className=" text-center border border-green-800  shadow min-w-max">
                 <thead className="bg-green-800">
                     <tr>
                         {columns.map((col) => (
@@ -45,7 +45,7 @@ export default function FootballTable({ idLeague, season, columns }: Props) {
                                             width={30}
                                             src={team.strBadge.replace("/tiny", "")}
                                             alt="Team logo"
-                                            className="mx-auto"
+                                            className="mx-auto "
                                         />
                                     ) : (
                                         team[col]

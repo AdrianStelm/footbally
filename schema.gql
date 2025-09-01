@@ -7,12 +7,7 @@ type User {
   email: String!
   password: String!
   username: String!
-  role: Role!
-}
-
-enum Role {
-  USER
-  ADMIN
+  role: String!
 }
 
 type News {
@@ -104,14 +99,14 @@ input CreateUser {
   email: String!
   password: String!
   username: String!
-  role: Role! = USER
+  role: String!
 }
 
 input UpdateUser {
   email: String
   password: String
   username: String
-  role: Role = USER
+  role: String
 }
 
 input CreateCommentInput {

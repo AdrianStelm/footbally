@@ -2,11 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink, from, fromPromise } from "
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { useAuthStore } from "./store/authStore";
-
-const API_URL =
-    typeof window === "undefined"
-        ? "http://backend:4000/graphql"
-        : "http://localhost:4000/graphql";
+import { API_URL } from "./consts/API_URL";
 
 const httpLink = createHttpLink({
     uri: API_URL,
@@ -66,6 +62,5 @@ const client = new ApolloClient({
     link: from([errorLink, authLink, httpLink]),
     cache: new InMemoryCache(),
 });
-
 
 export default client;
