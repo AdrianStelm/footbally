@@ -6,10 +6,10 @@ services:
     container_name: nest-backend
     environment:
       - PORT=4000
-      - DATABASE_URL=mongodb+srv://admin:admin@cluster0.hv7nfbh.mongodb.net/footbally?retryWrites=true&w=majority&appName=Cluster0
-      - JWT_SECRET_ACCES_TOKEN=secret
-      - JWT_SECRET_REFRESH_TOKEN=secret1
-      - JWT_SECRET=jwtsecret
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET_ACCES_TOKEN=${JWT_SECRET_ACCES_TOKEN}
+      - JWT_SECRET_REFRESH_TOKEN=${JWT_SECRET_REFRESH_TOKEN}
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - "4000:4000"
 
