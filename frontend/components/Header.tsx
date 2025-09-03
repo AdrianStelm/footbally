@@ -36,6 +36,7 @@ export default function Header() {
                     <>
                         <button onClick={() => logout(userId)}>Logout</button>
                         <Link href="/create-article">Create Article</Link>
+                        <Link href="/profile">Profile</Link>
                     </>
                 )}
                 <DropdownList dropdownCaption="Tables" />
@@ -72,6 +73,7 @@ export default function Header() {
                             <Link href="/create-article" onClick={() => setMenuOpen(false)}>
                                 Create Article
                             </Link>
+                            <Link href="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
                         </>
                     )}
                     <DropdownList dropdownCaption="Tables" />

@@ -12,6 +12,7 @@ const GET_ARTICLES_PAGINATED = gql`
         title
         text
         slug
+        imageUrl
         author {
           id
           username
@@ -60,6 +61,7 @@ export default async function Page(props: {
           createdAt={article.createdAt}
           updatedAt={article.updatedAt}
           likesCount={article.likesCount}
+          imageUrl={article.imageUrl}
         />
       ))}
 

@@ -9,8 +9,10 @@ export class CreateArticleDto {
   @Field()
   text: string;
 
-  @Field()
-  authorId: string;
+  //прибрав авторІд
+
+  @Field({ nullable: true })
+  imageUrl?: string
 }
 
 @InputType()

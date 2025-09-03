@@ -4,6 +4,7 @@ import { onError } from "@apollo/client/link/error";
 import { useAuthStore } from "./store/authStore";
 import { API_URL } from "./consts/API_URL";
 
+
 const httpLink = createHttpLink({
     uri: API_URL,
     credentials: "include",

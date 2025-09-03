@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         hostname: "www.thesportsdb.com",
 
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 };

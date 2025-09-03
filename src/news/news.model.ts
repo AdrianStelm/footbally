@@ -24,4 +24,7 @@ export class News {
 
     @Field()
     slug: string;
+
+    @Field(() => String, { nullable: true })
+    imageUrl?: string | null;
 }

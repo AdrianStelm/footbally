@@ -9,8 +9,7 @@ export class CreateArticleDto {
   @IsString()
   text: string;
 
-  @IsString()
-  authorId: string;
+  imageUrl?: string | null;
 }
 
 export class UpdateArticleDto extends PartialType(CreateArticleDto) { }

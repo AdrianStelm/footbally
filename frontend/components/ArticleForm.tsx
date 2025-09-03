@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ArticleFormProps {
     initialTitle?: string;
     initialText?: string;
-    onSubmit: (data: { title: string; text: string }) => Promise<void>;
+    onSubmit: (data: { title: string; text: string; file?: File }) => Promise<void>;
     loading?: boolean;
 }
 
@@ -18,8 +19,10 @@ export default function ArticleForm({
 }: ArticleFormProps) {
     const [title, setTitle] = useState(initialTitle);
     const [text, setText] = useState(initialText);
+    const [file, setFile] = useState<File | undefined>();
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const router = useRouter()
 
     useEffect(() => {
         setTitle(initialTitle);
@@ -35,8 +38,9 @@ export default function ArticleForm({
         setErrorMsg(null);
 
         try {
-            await onSubmit({ title, text });
-            toast.success("Success!");
+            await onSubmit({ title, text, file });
+            toast.success("Article has created");
+            router.replace('/articles')
         } catch (err) {
             const error = err as Error
             setErrorMsg(error?.message || "Error");
@@ -71,6 +75,11 @@ export default function ArticleForm({
             >
                 {loading || externalLoading ? "Saving..." : "Save Article"}
             </button>
+            <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0])}
+            />
             {errorMsg && <p className="text-red-500">{errorMsg}</p>}
         </form>
     );

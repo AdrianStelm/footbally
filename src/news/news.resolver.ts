@@ -1,4 +1,7 @@
 import { Resolver, Query, Mutation, Args, ResolveField, Parent, Int } from '@nestjs/graphql';
+import type { FileUpload } from 'graphql-upload-minimal';
+import { GraphQLUpload } from 'graphql-upload-minimal';
+import cloudinary from './cloudinary.provider';
 import { NewsService } from './news.service';
 import { News } from './news.model';
 import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
@@ -34,12 +37,37 @@ export class NewsResolver {
     return this.newsService.getById(id)
   }
 
+
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => News)
-  async createArticle(@Args('data') data: CreateArticleDto): Promise<News> {
-    return this.newsService.create(data)
+  async createArticle(
+    @Args('data') data: CreateArticleDto,
+    @CurrentUser('sub') userId: string,
+    @Args({ name: 'file', type: () => GraphQLUpload, nullable: true }) file?: FileUpload,
+  ): Promise<News> {
+    if (file) {
+      const stream = file.createReadStream();
+
+      const imageUrl = await new Promise<string>((resolve, reject) => {
+        const upload = cloudinary.uploader.upload_stream(
+          { folder: 'articles' },
+          (error, result) => {
+            if (error) return reject(new Error(error.message || 'Upload error'));
+            resolve(result!.secure_url);
+          },
+        );
+        stream.pipe(upload);
+      });
+
+      data.imageUrl = imageUrl;
+    }
+
+    return this.newsService.create(data, userId);
   }
+
+
+
 
   @Query(() => NewsPaginationResponse)
   async news(
@@ -114,10 +142,12 @@ export class NewsResolver {
     return this.newsService.getTopLikedLast7Days();
   }
 
-
-
-
-
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
+  @Query(() => [News])
+  async getArticlesByAuthor(@CurrentUser('sub') userId: string) {
+    return this.newsService.getArticlesByAuthorSimple(userId);
+  }
 
 
 }

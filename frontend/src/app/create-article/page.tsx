@@ -5,35 +5,42 @@ import { useAuthStore } from "../../../store/authStore";
 import { useCheckAuth } from "../../../hooks/useCheckAuth";
 import { toast } from "sonner";
 import ArticleForm from "../../../components/ArticleForm";
+import uploadClient from "../../../apollo-upload-client";
 
 const CREATE_ARTICLE = gql`
-  mutation CreateArticle($data: CreateArticleDto!) {
-    createArticle(data: $data) {
+  mutation CreateArticle($data: CreateArticleDto!, $file: Upload) {
+    createArticle(data: $data, file: $file) {
       id
       title
       text
+      imageUrl
     }
   }
 `;
 
+
 export default function CreateArticlePage() {
-  const { accessToken, userId } = useAuthStore();
+  const { accessToken } = useAuthStore();
   useCheckAuth();
 
-  const [createArticle] = useMutation(CREATE_ARTICLE);
+  const [createArticle] = useMutation(CREATE_ARTICLE, { client: uploadClient });
 
-  const handleSubmit = async (data: { title: string; text: string }) => {
+  const handleSubmit = async (data: { title: string; text: string; file?: File }) => {
+    console.log(data.file)
     try {
       await createArticle({
         variables: {
           data: {
-            ...data,
-            authorId: userId,
+            title: data.title,
+            text: data.text,
           },
+          file: data.file,
         },
         context: {
           headers: {
             authorization: `Bearer ${accessToken}`,
+            'apollo-require-preflight': 'true',
+
           },
         },
       });

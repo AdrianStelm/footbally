@@ -9,6 +9,7 @@ export type ArticleType = {
     createdAt: string;
     updatedAt: string;
     likesCount: number;
+    imageUrl: string;
 }
 
 export type ArticlesPaginatedDataType = {

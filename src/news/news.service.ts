@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { CreateArticleDto, UpdateArticleDto } from './news.dto';
+import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
 import { Prisma } from '@prisma/client';
 import { NewsPaginationArgs } from './news-pagination.args';
 import slugify from 'slugify';
@@ -14,17 +14,19 @@ type ArticleWithAuthor = Prisma.ArticleGetPayload<{ include: { author: true } }>
 export class NewsService {
   constructor(private prisma: PrismaService) { }
 
-  async create(dto: CreateArticleDto) {
+  async create(dto: CreateArticleDto, authorId: string) {
     return this.prisma.article.create({
       data: {
         title: dto.title,
         text: dto.text,
         slug: slugify(dto.title, { lower: true, strict: true }),
-        author: { connect: { id: dto.authorId } },
+        imageUrl: dto.imageUrl,
+        author: { connect: { id: authorId } },
       },
       include: { author: true },
     });
   }
+
 
   async getArticles(params?: {
     take?: number;
@@ -137,7 +139,7 @@ export class NewsService {
   }
 
 
-  async changeById(id: string, data: UpdateArticleDto, userId: string) {
+  async changeById(id: string, data: UpdateArticleInput, userId: string) {
     const article = await this.prisma.article.findUnique({ where: { id } });
     if (!article) throw new NotFoundException('Article not found');
     if (article.authorId !== userId) throw new ForbiddenException('Not your article');
@@ -199,6 +201,19 @@ export class NewsService {
       },
     });
   }
+
+  async getArticlesByAuthorSimple(authorId: string) {
+    return this.prisma.article.findMany({
+      where: { authorId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        author: {
+          select: { id: true, username: true },
+        },
+      },
+    });
+  }
+
 
 
 }
