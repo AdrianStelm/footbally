@@ -69,14 +69,16 @@ type Mutation {
   deleteArticle(id: String!): Boolean!
   changeArticle(id: String!, data: UpdateArticleInput!): News!
   LikeArticle(data: CreateLikeInput!): News!
+  deleteArticlesWithoutImage: Boolean!
   createUser(data: CreateUser!): AuthTokens!
-  updateUser(id: String!, data: UpdateUser!): User!
+  updateUser(data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
   login(email: String!, password: String!): AuthTokens!
   refreshTokens: AuthTokens!
   logout(userId: String!): Boolean!
   requestPasswordReset(email: String!): Boolean!
   passwordReset(token: String!, newPassword: String!): Boolean!
+  googleLogin(idToken: String!): AuthTokens!
   addComment(data: CreateCommentInput!): Comment!
   deleteComment(id: String!): Boolean!
 }

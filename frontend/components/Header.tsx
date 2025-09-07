@@ -17,7 +17,7 @@ export default function Header() {
     if (!initialized) return null;
 
     return (
-        <header className="flex fixed bg-black w-full text-white z-50 justify-between items-center p-6 rounded-3xl cursor-pointer">
+        <header className="flex fixed bg-black text-white w-full z-50 justify-between items-center p-6 rounded-3xl cursor-pointer">
             <Link href="/" className="text-3xl font-bold">
                 Footbally.
             </Link>

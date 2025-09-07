@@ -9,6 +9,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { Response } from 'express';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { Role } from './role.enum';
+import { CurrentUser } from 'src/auth/current-user.decorator';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -50,8 +51,8 @@ export class UserResolver {
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.USER, Role.ADMIN)
   @Mutation(() => User)
-  async updateUser(@Args('id') id: string, @Args('data') data: UpdateUser): Promise<User> {
-    return await this.userService.updateById(id, data)
+  async updateUser(@CurrentUser('sub') userId: string, @Args('data') data: UpdateUser): Promise<User> {
+    return await this.userService.updateById(userId, data)
   }
 
   @UseGuards(JwtGuard, RolesGuard)

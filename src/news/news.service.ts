@@ -214,6 +214,17 @@ export class NewsService {
     });
   }
 
+  async deleteArticlesWithoutImage() {
+    return this.prisma.$runCommandRaw({
+      delete: "Article", // назва колекції в Mongo
+      deletes: [
+        { q: { imageUrl: { $exists: false } }, limit: 0 }
+      ]
+    });
+  }
+
+
+
 
 
 }

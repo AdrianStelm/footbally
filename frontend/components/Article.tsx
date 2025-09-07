@@ -60,13 +60,13 @@ export default function ArticleCard({
     return (
         <div className="lg:flex justify-center">
             <article className="p-4 min-h-[220px] rounded-lg bg- lg:basis-200">
-                <div className="flex flex-col-reverse items-center md:items-stretch md:flex-row md:justify-between gap-4">
+                <div className="flex flex-col-reverse items-center md:items-stretch md:flex-row md:justify-between gap-4 relative">
                     <Link href={`/articles/${slug}`}>
                         <h2 className="text-2xl font-bold hover:underline">{(title.length >= 20) ? title.slice(1, 20) + '...' : title}</h2>
                         <p className="break-words">{(text.length >= 50) ? text.slice(1, 51) + '...' : text}</p>
                         <p className="text-sm ">Автор: {author.username} | {new Date(createdAt).toLocaleDateString("uk-UA")}</p>
                     </Link>
-                    <Image loading="lazy" className="w-full max-w-[250px] h-auto object-cover rounded" width={250} height={140} src={imageUrl} alt={title}></Image>
+                    {imageUrl && (<Image loading="lazy" className="w-full max-w-[250px] h-auto object-cover rounded" width={250} height={140} src={imageUrl} alt={title}></Image>)}
                 </div>
                 {currentUserId === author.id && (
                     <div className="flex gap-2 mt-3">

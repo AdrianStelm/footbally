@@ -11,9 +11,11 @@ import { Role } from 'src/user/role.enum';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
 import { Response, Request } from 'express';
+import { OAuth2Client } from 'google-auth-library';
 
 @Resolver()
 export class AuthResolver {
+  private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
@@ -102,6 +104,42 @@ export class AuthResolver {
 
     await this.userService.resetPassword(user.id, newPassword);
     return true;
+  }
+
+  @Mutation(() => AuthTokens)
+  async googleLogin(
+    @Args('idToken') idToken: string,
+    @Context() ctx: { res: Response },
+  ): Promise<AuthTokens> {
+    // ✅ Валідація токена Google
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload?.email) {
+      throw new Error('Google login failed');
+    }
+
+    // ✅ Створюємо або беремо існуючого юзера
+    const user = await this.authService.validateGoogleUser({
+      email: payload.email,
+      username: payload.name || payload.email.split('@')[0],
+    });
+
+    // ✅ Генеруємо наші JWT токени
+    const tokens = await this.authService.login(user);
+
+    // ✅ Refresh token у cookie
+    ctx.res.cookie('refresh_token', tokens.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/graphql',
+    });
+
+    return tokens;
   }
 
 

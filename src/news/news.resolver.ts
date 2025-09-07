@@ -149,5 +149,12 @@ export class NewsResolver {
     return this.newsService.getArticlesByAuthorSimple(userId);
   }
 
+  @Mutation(() => Boolean)
+  async deleteArticlesWithoutImage() {
+    await this.newsService.deleteArticlesWithoutImage();
+    return true;
+  }
+
+
 
 }

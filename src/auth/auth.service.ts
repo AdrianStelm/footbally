@@ -4,6 +4,7 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { IUser } from './types/user.interface';
 import { Role } from 'src/user/role.enum';
+import { randomBytes } from 'crypto';
 
 interface JwtPayload {
     sub: string;
@@ -71,6 +72,23 @@ export class AuthService {
             throw new Error('Refresh token expired or invalid');
         }
     }
+
+    async validateGoogleUser(data: { email: string; username: string }) {
+        let user = await this.userService.findByEmail(data.email);
+
+        if (!user) {
+            user = await this.userService.create({
+                email: data.email,
+                username: data.username,
+                password: await bcrypt.hash(randomBytes(16).toString('hex'), 10), // випадковий пароль
+                role: 'USER',
+            });
+        }
+
+        return user;
+    }
+
+
 
 
 
