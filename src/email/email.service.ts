@@ -12,8 +12,8 @@ export class EmailService {
                 port: 587,
                 secure: false,
                 auth: {
-                    user: testAccount.user, // логін акаунта
-                    pass: testAccount.pass, // пароль акаунта
+                    user: testAccount.user,
+                    pass: testAccount.pass,
                 },
             });
             console.log('Ethereal test account:', testAccount);
@@ -26,9 +26,22 @@ export class EmailService {
             from: '"Footbally" <no-reply@footbally.com>',
             to,
             subject: 'Password Reset',
-            html: `<p>Щоб скинути пароль, перейдіть за посиланням: <a href="${resetUrl}">${resetUrl}</a></p>`,
+            html: `<p>Click on link to reset password: <a href="${resetUrl}">${resetUrl}</a></p>`,
         });
 
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
+
+    async sendEmailChangeConfirmation(to: string, token: string) {
+        const confirmUrl = `http://localhost:3000/confirm-email?token=${token}`;
+        const info = await this.transporter.sendMail({
+            from: '"Footbally" <no-reply@footbally.com>',
+            to,
+            subject: 'Confirm your new email',
+            html: `<p>Click this link to confirm your new email: <a href="${confirmUrl}">${confirmUrl}</a></p>`,
+        });
+
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
+
 }

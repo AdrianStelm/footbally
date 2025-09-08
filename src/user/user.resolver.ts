@@ -10,10 +10,12 @@ import { Response } from 'express';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { Role } from './role.enum';
 import { CurrentUser } from 'src/auth/current-user.decorator';
+import { EmailService } from 'src/email/email.service';
+import * as bcrypt from 'bcrypt'
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService, private readonly authService: AuthService) { }
+  constructor(private readonly userService: UserService, private readonly authService: AuthService, private readonly emailService: EmailService) { }
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.ADMIN)
@@ -62,5 +64,40 @@ export class UserResolver {
     await this.userService.deleteById(id)
     return true
   }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
+  @Mutation(() => Boolean)
+  async changePassword(@CurrentUser('sub') userId: string, @Args('inputedPassword') inputedPassword: string, @Args('newPassword') newPassword: string): Promise<boolean> {
+    await this.userService.changePassword(userId, newPassword, inputedPassword,)
+    return true
+  }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
+  @Mutation(() => Boolean)
+  async requestEmailChange(
+    @CurrentUser('sub') userId: string,
+    @Args('newEmail') newEmail: string,
+  ): Promise<boolean> {
+    const token = Math.random().toString(16).slice(2);
+    const hashedToken = await bcrypt.hash(token, 10);
+    const expireTime = new Date(Date.now() + 1000 * 60 * 30);
+
+    await this.userService.setEmailChangeToken(userId, newEmail, hashedToken, expireTime);
+
+    await this.emailService.sendEmailChangeConfirmation(newEmail, token);
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async confirmEmailChange(
+    @Args('token') token: string
+  ): Promise<boolean> {
+    return await this.userService.confirmEmailChange(token);
+  }
+
+
 
 }

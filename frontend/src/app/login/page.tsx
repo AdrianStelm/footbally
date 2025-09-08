@@ -8,6 +8,7 @@ import { useAuthStore } from "../../../store/authStore";
 import Link from "next/link";
 import { UserType } from "../../../types/userType";
 import { GoogleLogin } from "@react-oauth/google";
+import { useApolloClient } from "@apollo/client";
 
 const loginFields: FieldConfig[] = [
     { name: "email", label: "Write your email", type: "email", placeholder: "test@example.com", required: true },
@@ -39,6 +40,8 @@ export default function Page() {
     const [googleLogin] = useMutation(GOOGLE_LOGIN);
     const router = useRouter();
     const setAuth = useAuthStore((state) => state.setAuth);
+    const client = useApolloClient();
+
 
     const handleLogin = async (formData: LoginUserType) => {
         try {
@@ -50,6 +53,7 @@ export default function Page() {
             });
             const { access_token, userId } = result.data.login;
             setAuth(access_token, userId);
+            await client.resetStore()
             router.replace("/");
         } catch (err) {
             console.error("Login error:", err);
@@ -74,8 +78,8 @@ export default function Page() {
                         const { data } = await googleLogin({ variables: { idToken } });
 
                         if (data?.googleLogin?.access_token && data?.googleLogin?.userId) {
-                            // ✅ правильно під твій store
                             setAuth(data.googleLogin.access_token, data.googleLogin.userId);
+                            await client.resetStore()
                             router.replace("/");
                         }
                     } catch (err) {

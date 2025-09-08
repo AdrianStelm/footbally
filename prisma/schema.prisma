@@ -37,6 +37,9 @@ model User {
   refreshToken         String?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  pendingEmail         String?
+  emailChangeToken     String?
+  emailChangeExpires   DateTime?
   articles             Article[]
   comments             Comment[]
   Like                 Like[]

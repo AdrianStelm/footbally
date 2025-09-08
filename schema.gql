@@ -73,6 +73,9 @@ type Mutation {
   createUser(data: CreateUser!): AuthTokens!
   updateUser(data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
+  changePassword(inputedPassword: String!, newPassword: String!): Boolean!
+  requestEmailChange(newEmail: String!): Boolean!
+  confirmEmailChange(token: String!): Boolean!
   login(email: String!, password: String!): AuthTokens!
   refreshTokens: AuthTokens!
   logout(userId: String!): Boolean!

@@ -3,6 +3,8 @@ import { UserDto, UpdateUserDto } from './user.dto';
 import { User } from '@prisma/client'
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
+import { UnauthorizedException } from '@nestjs/common';
+
 
 
 @Injectable()
@@ -105,6 +107,68 @@ export class UserService {
 
         return true;
     }
+
+    async changePassword(userId: string, inputedPassword: string, newPassword: string): Promise<boolean> {
+        const user = await this.getById(userId);
+
+        const isValid = await bcrypt.compare(inputedPassword, user!.password);
+        if (!isValid) {
+            throw new UnauthorizedException('Wrong current password');
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        await this.updateById(userId, {
+            password: hashedNewPassword,
+        });
+
+        return true;
+    }
+
+    async setEmailChangeToken(userId: string, newEmail: string, token: string, expireTime: Date) {
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                emailChangeToken: token,
+                emailChangeExpires: expireTime,
+                pendingEmail: newEmail,
+            },
+        });
+    }
+
+    async confirmEmailChange(token: string): Promise<boolean> {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                emailChangeToken: { not: null },
+                emailChangeExpires: { gt: new Date() },
+            },
+        });
+
+        if (!user || !user.emailChangeToken) return false;
+
+        // порівнюємо токен з хешем у БД
+        const isMatch = await bcrypt.compare(token, user.emailChangeToken);
+        if (!isMatch) return false;
+
+        if (!user.pendingEmail) {
+            throw new Error('No pending email set');
+        }
+
+        // оновлюємо email і очищаємо токен
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                email: user.pendingEmail,
+                pendingEmail: null,
+                emailChangeToken: null,
+                emailChangeExpires: null,
+            },
+        });
+
+        return true;
+    }
+
+
+
 
 
 }

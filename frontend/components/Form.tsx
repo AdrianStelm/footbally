@@ -8,12 +8,14 @@ interface AuthFormProps<TFormValues extends Record<string, string>> {
     fields: FieldConfig[];
     onSubmit: SubmitHandler<TFormValues>;
     buttonText: string;
+    disabled?: boolean
 }
 
 export default function Form<TFormValues extends Record<string, string>>({
     fields,
     onSubmit,
     buttonText,
+    disabled,
 }: AuthFormProps<TFormValues>) {
     const { register, handleSubmit, formState: { errors } } = useForm<TFormValues>();
     const [showPassword, setShowPassword] = useState(false);
@@ -56,7 +58,7 @@ export default function Form<TFormValues extends Record<string, string>>({
                     </div>
                 );
             })}
-            <button type="submit" className="mt-5 px-10 py-1 text-white bg-black rounded hover:bg-green-700">
+            <button disabled={disabled} type="submit" className="mt-5 px-10 py-1 text-white bg-black rounded hover:bg-green-700">
                 {buttonText}
             </button>
         </form>

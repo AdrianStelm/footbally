@@ -111,7 +111,6 @@ export class AuthResolver {
     @Args('idToken') idToken: string,
     @Context() ctx: { res: Response },
   ): Promise<AuthTokens> {
-    // ✅ Валідація токена Google
     const ticket = await this.googleClient.verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -122,16 +121,13 @@ export class AuthResolver {
       throw new Error('Google login failed');
     }
 
-    // ✅ Створюємо або беремо існуючого юзера
     const user = await this.authService.validateGoogleUser({
       email: payload.email,
       username: payload.name || payload.email.split('@')[0],
     });
 
-    // ✅ Генеруємо наші JWT токени
     const tokens = await this.authService.login(user);
 
-    // ✅ Refresh token у cookie
     ctx.res.cookie('refresh_token', tokens.refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
