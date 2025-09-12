@@ -1,24 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useAuthStore } from "../store/authStore";
+import { GOOGLE_LOGIN } from "../graphql/mutations/auth/authMutations";
 
-const GOOGLE_LOGIN_MUTATION = gql`
-  mutation GoogleLogin($idToken: String!) {
-    googleLogin(idToken: $idToken) {
-      access_token
-      userId
-    }
-  }
-`;
 
 export default function GoogleLoginButton() {
-    const [googleLogin] = useMutation(GOOGLE_LOGIN_MUTATION);
+    const [googleLogin] = useMutation(GOOGLE_LOGIN);
     const setAuth = useAuthStore((state) => state.setAuth);
 
     useEffect(() => {
-        /* global google */
         window.google.accounts.id.initialize({
             client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
             callback: handleCredentialResponse,

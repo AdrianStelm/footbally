@@ -10,15 +10,22 @@ type User {
   role: String!
 }
 
+type ArticleContent {
+  id: String!
+  imageUrl: String
+  videoUrl: String
+  order: Int!
+  content: String!
+}
+
 type News {
   id: String!
   title: String!
-  text: String!
   author: User!
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  imageUrl: String
+  content: [ArticleContent!]
   likesCount: Int!
 }
 
@@ -32,6 +39,12 @@ type NewsPaginationResponse {
   totalItems: Int!
   totalPages: Int!
   currentPage: Int!
+}
+
+type SearchArticle {
+  id: String!
+  title: String!
+  slug: String!
 }
 
 type AuthTokens {
@@ -59,17 +72,17 @@ type Query {
   loadMoreArticles(skip: Int, take: Int): [News!]!
   getTopLikedLast7Days: [News!]!
   getArticlesByAuthor: [News!]!
+  searchArticles(query: String!): [SearchArticle!]!
   getAllUsers: [User!]!
   getUserByEmail(email: String!): User!
   commentsByArticle(articleId: String!): [Comment!]!
 }
 
 type Mutation {
-  createArticle(data: CreateArticleDto!, file: Upload): News!
+  createArticle(data: CreateArticleDto!, files: [Upload!]): News!
   deleteArticle(id: String!): Boolean!
   changeArticle(id: String!, data: UpdateArticleInput!): News!
   LikeArticle(data: CreateLikeInput!): News!
-  deleteArticlesWithoutImage: Boolean!
   createUser(data: CreateUser!): AuthTokens!
   updateUser(data: UpdateUser!): User!
   deleteUser(id: String!): Boolean!
@@ -88,8 +101,14 @@ type Mutation {
 
 input CreateArticleDto {
   title: String!
-  text: String!
+  content: [ArticleContentInput!]!
+}
+
+input ArticleContentInput {
+  content: String!
   imageUrl: String
+  videoUrl: String
+  order: Int!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -97,8 +116,7 @@ scalar Upload
 
 input UpdateArticleInput {
   title: String
-  text: String
-  imageUrl: String
+  content: [ArticleContentInput!]
 }
 
 input CreateLikeInput {

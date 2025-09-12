@@ -14,8 +14,10 @@
   }
 }
 
-body {
+body,
+input#search {
   background: var(--background);
+  color: var(--foreground);
 }
 
 
@@ -30,9 +32,17 @@ form,
 h2,
 a,
 p,
-article {
+article,
+time {
   color: var(--foreground);
 
+}
+
+header a,
+header p,
+header button,
+header input {
+  color: white
 }
 
 form {

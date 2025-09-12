@@ -1,36 +1,11 @@
 import ArticleCard from "../../../components/Article";
-import client from "../../../apollo-client";
-import { gql } from "@apollo/client";
+import client from "../../../apollo/apollo-client";
 import Link from "next/link";
-import { ArticlesPaginatedDataType } from "../../../types/ArticleTypes";
-
-const GET_ARTICLES_PAGINATED = gql`
-  query ArticlesPaginated($page: Int!, $limit: Int!) {
-    articlesPaginated(page: $page, limit: $limit) {
-      items {
-        id
-        title
-        text
-        slug
-        imageUrl
-        author {
-          id
-          username
-        }
-        createdAt
-        updatedAt
-        likesCount
-      }
-      totalItems
-      totalPages
-      currentPage
-    }
-  }
-`;
+import { ArticlesPaginatedDataType, ArticleType } from "../../../types/ArticleTypes";
+import { GET_ARTICLES_PAGINATED } from "../../../graphql/queries/article/articleQuries";
 
 
-
-export const revalidate = 50;
+export const revalidate = 60;
 
 export default async function Page(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -50,7 +25,7 @@ export default async function Page(props: {
 
   return (
     <div className="space-y-4">
-      {items.map((article) => (
+      {items.map((article: ArticleType) => (
         <ArticleCard
           key={article.id}
           id={article.id}
@@ -61,7 +36,7 @@ export default async function Page(props: {
           createdAt={article.createdAt}
           updatedAt={article.updatedAt}
           likesCount={article.likesCount}
-          imageUrl={article.imageUrl}
+          content={article.content}
         />
       ))}
 
@@ -83,7 +58,7 @@ export default async function Page(props: {
             prefetch={false}
             className={`px-3 py-1 rounded ${pageNumber === currentPage
               ? "bg-green-800 font-bold"
-              : "bg-black  hover:bg-green-700"
+              : "bg-black hover:bg-green-700"
               }`}
           >
             {pageNumber}

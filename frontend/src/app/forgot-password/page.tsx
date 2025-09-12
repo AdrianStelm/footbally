@@ -1,8 +1,9 @@
 "use client";
 import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useState, useEffect } from "react";
+import { RESET_PASSWORD } from "../../../graphql/mutations/auth/authMutations";
 
 const resetField: FieldConfig[] = [
     {
@@ -14,11 +15,7 @@ const resetField: FieldConfig[] = [
     },
 ];
 
-const RESET_PASSWORD = gql`
-  mutation requestPasswordReset($email: String!) {
-    requestPasswordReset(email: $email)
-  }
-`;
+
 
 export default function Page() {
     const [resetPassword] = useMutation(RESET_PASSWORD);

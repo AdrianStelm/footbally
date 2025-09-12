@@ -1,18 +1,15 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { PartialType } from '@nestjs/graphql';
+import { ArticleContentInput } from './article-content.dto';
 
 @InputType()
 export class CreateArticleDto {
   @Field()
   title: string;
 
-  @Field()
-  text: string;
+  @Field(() => [ArticleContentInput])
+  content: ArticleContentInput[];
 
-  //прибрав авторІд
-
-  @Field({ nullable: true })
-  imageUrl?: string
 }
 
 @InputType()

@@ -1,12 +1,12 @@
 import { Resolver, Query, Mutation, Args, ResolveField, Parent } from '@nestjs/graphql';
 import { CommentService } from './comment.service';
-import { Comment } from './comment.entity';
-import { JwtGuard } from 'src/auth/jwt.guard';
-import { CurrentUser } from 'src/auth/current-user.decorator';
+import { Comment } from './dto/comment.dto';
+import { JwtGuard } from 'src/common/guards/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UseGuards } from '@nestjs/common';
-import { User } from 'src/user/user.graphql.model';
-import { News } from 'src/news/news.model';
-import { CreateCommentInput } from './comment.entity';
+import { User } from 'src/user/dto/user.dto';
+import { News } from 'src/news/dto/news.dto';
+import { CreateCommentInput } from './dto/comment.dto';
 
 @Resolver(() => Comment)
 export class CommentResolver {

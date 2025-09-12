@@ -1,53 +1,40 @@
 "use client";
 
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ArticleForm from "../../../../../components/ArticleForm";
+import ArticleForm, { Block } from "../../../../../components/ArticleForm";
+import { ArticleMediaType } from "../../../../../types/ArticleTypes";
+import { UPDATE_ARTICLE } from "../../../../../graphql/mutations/article/articleMutations";
+import { GET_ARTICLE_BY_SLUG } from "../../../../../graphql/queries/article/articleQuries";
 
-const GET_ARTICLE = gql`
-  query GetArticleBySlug($slug: String!) {
-    getArticleBySlug(slug: $slug) {
-      id
-      title
-      text
-      author {
-        id
-        username
-      }
-    }
-  }
-`;
 
-const UPDATE_ARTICLE = gql`
-  mutation ChangeArticle($id: String!, $data: UpdateArticleInput!) {
-    changeArticle(id: $id, data: $data) {
-      id
-      title
-      text
-      updatedAt
-    }
-  }
-`;
 
 export default function EditArticlePage() {
   const router = useRouter();
   const { slug } = useParams<{ slug: string }>();
 
-  const { data, loading, error } = useQuery(GET_ARTICLE, { variables: { slug } });
+  const { data, loading, error } = useQuery(GET_ARTICLE_BY_SLUG, { variables: { slug } });
   const [updateArticle, { loading: mutationLoading }] = useMutation(UPDATE_ARTICLE);
 
-  const [initialValues, setInitialValues] = useState<{ title: string; text: string }>({
-    title: "",
-    text: "",
-  });
+  const [initialTitle, setInitialTitle] = useState("");
+  const [initialBlocks, setInitialBlocks] = useState<Block[]>([]);
 
   useEffect(() => {
     if (data?.getArticleBySlug) {
-      setInitialValues({
-        title: data.getArticleBySlug.title,
-        text: data.getArticleBySlug.text,
+      setInitialTitle(data.getArticleBySlug.title);
+
+      const sortedBlocks = [...data.getArticleBySlug.content].sort(
+        (a, b) => a.order - b.order
+      );
+
+      const blocks: Block[] = sortedBlocks.map((b: ArticleMediaType) => {
+        if (b.imageUrl) return { id: b.id, type: "image", file: b.imageUrl, content: "" };
+        if (b.videoUrl) return { id: b.id, type: "video", file: b.videoUrl, content: "" };
+        return { id: b.id, type: "text", content: b.content || "", file: undefined };
       });
+
+      setInitialBlocks(blocks);
     }
   }, [data]);
 
@@ -55,10 +42,18 @@ export default function EditArticlePage() {
   if (error) return <p>Error: {error.message}</p>;
   if (!data?.getArticleBySlug) return <p>No article found</p>;
 
-  const handleSubmit = async (formData: { title: string; text: string }) => {
+  const handleSubmit = async ({ title, blocks }: { title: string; blocks: Block[] }) => {
+    const content = blocks.map((b, idx) => ({
+      content: b.type === "text" ? b.content : "",
+      imageUrl: b.type === "image" ? (b.file instanceof File ? b.file : b.file) : null,
+      videoUrl: b.type === "video" ? (b.file instanceof File ? b.file : b.file) : null,
+      order: idx,
+    }));
+
     await updateArticle({
-      variables: { id: data.getArticleBySlug.id, data: formData },
+      variables: { id: data.getArticleBySlug.id, data: { title, content } },
     });
+
     router.push(`/articles/${slug}`);
   };
 
@@ -66,8 +61,8 @@ export default function EditArticlePage() {
     <div className="flex-1 w-full max-w-4xl mx-auto p-6">
       <h2 className="text-5xl font-bold mb-4">Edit Article</h2>
       <ArticleForm
-        initialTitle={initialValues.title}
-        initialText={initialValues.text}
+        initialTitle={initialTitle}
+        initialBlocks={initialBlocks}
         onSubmit={handleSubmit}
         loading={mutationLoading}
       />

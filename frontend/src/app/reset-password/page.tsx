@@ -3,9 +3,10 @@
 import { use } from 'react'
 import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { NEW_PASSWORD } from '../../../graphql/mutations/user/userMutations';
 
 const fields: FieldConfig[] = [
     {
@@ -15,12 +16,6 @@ const fields: FieldConfig[] = [
         required: true
     }
 ]
-
-const NEW_PASSWORD = gql`
-  mutation passwordReset($token: String!, $newPassword: String!) {
-    passwordReset(token: $token, newPassword: $newPassword)
-  }
-`
 
 export default function Page({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
     const params = use(searchParams);

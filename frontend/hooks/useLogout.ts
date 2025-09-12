@@ -1,13 +1,8 @@
 "use client";
 import { useAuthStore } from '../store/authStore';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/navigation';
-
-const LOGOUT = gql`
-  mutation Logout($userId: String!) {
-    logout(userId: $userId)
-  }
-`;
+import { LOGOUT } from '../graphql/mutations/auth/authMutations';
 
 export const useLogout = () => {
   const router = useRouter();

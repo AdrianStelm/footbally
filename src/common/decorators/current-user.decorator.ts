@@ -1,7 +1,7 @@
 // current-user.decorator.ts
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { JwtPayload } from './jwt.guard';
+import { JwtPayload } from '../guards/jwt.guard';
 
 export const CurrentUser = createParamDecorator(
     (data: keyof JwtPayload | undefined, context: ExecutionContext) => {
@@ -11,9 +11,9 @@ export const CurrentUser = createParamDecorator(
         if (!user) return null;
 
         if (data) {
-            return user[data] ?? null; // повертаємо конкретне поле або null
+            return user[data] ?? null;
         }
 
-        return user; // весь payload
+        return user;
     },
 );

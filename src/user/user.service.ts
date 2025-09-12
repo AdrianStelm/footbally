@@ -1,10 +1,26 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { UserDto, UpdateUserDto } from './user.dto';
 import { User } from '@prisma/client'
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
 import { UnauthorizedException } from '@nestjs/common';
+import { MinLength, IsEmail } from "@nestjs/class-validator";
+import { PartialType } from '@nestjs/mapped-types';
 
+class UserDto {
+
+    @IsEmail()
+    email: string;
+
+    @MinLength(5)
+    username: string;
+
+    @MinLength(5)
+    password: string;
+
+    role: string;
+}
+
+class UpdateUserDto extends PartialType(UserDto) { }
 
 
 @Injectable()
@@ -145,7 +161,6 @@ export class UserService {
 
         if (!user || !user.emailChangeToken) return false;
 
-        // порівнюємо токен з хешем у БД
         const isMatch = await bcrypt.compare(token, user.emailChangeToken);
         if (!isMatch) return false;
 
@@ -153,7 +168,6 @@ export class UserService {
             throw new Error('No pending email set');
         }
 
-        // оновлюємо email і очищаємо токен
         await this.prisma.user.update({
             where: { id: user.id },
             data: {
@@ -166,8 +180,6 @@ export class UserService {
 
         return true;
     }
-
-
 
 
 

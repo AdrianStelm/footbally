@@ -1,20 +1,8 @@
 import HomeClient from "../../components/HomeClient";
-import { ApolloClient, InMemoryCache, createHttpLink, gql } from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { API_URL } from "../../consts/API_URL";
+import { GET_MORE_ARTICLES } from "../../graphql/queries/article/articleQuries";
 
-const GET_ARTICLES = gql`
-query LoadMoreArticles($skip: Int, $take: Int) {
-  loadMoreArticles(skip: $skip, take: $take) {
-    id
-    title
-    text
-    slug
-    createdAt
-    author { id username }
-    likesCount
-  }
-}
-`;
 
 export const revalidate = 120;
 
@@ -28,7 +16,7 @@ export default async function Home() {
   });
 
   const { data } = await ssrClient.query({
-    query: GET_ARTICLES,
+    query: GET_MORE_ARTICLES,
     variables: { skip: 0, take: 7 },
     fetchPolicy: "no-cache",
   });

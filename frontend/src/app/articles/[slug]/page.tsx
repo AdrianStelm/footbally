@@ -1,22 +1,10 @@
-import { gql } from "@apollo/client";
-import client from "../../../../apollo-client";
+import { GET_ARTICLE_BY_SLUG } from "../../../../graphql/queries/article/articleQuries";
+import client from "../../../../apollo/apollo-client";
 import { notFound } from "next/navigation";
 import Comments from "../../../../components/Comments";
+import Image from "next/image";
 
-const GET_ARTICLE_BY_SLUG = gql`
-  query GetArticleBySlug($slug: String!) {
-    getArticleBySlug(slug: $slug) {
-      id
-      title
-      text
-      createdAt
-      author {
-        username
-        id
-      }
-    }
-  }
-`;
+
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -34,16 +22,55 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = data?.getArticleBySlug;
   if (!article) return notFound();
 
-  return (
-    <div className="p-4 flex-1">
-      <h2 className="text-4xl font-bold">{article.title}</h2>
-      <p>
-        By {article.author.username} |{" "}
-        {new Date(article.createdAt).toLocaleDateString()}
-      </p>
-      <p className="mt-4">{article.text}</p>
+  const blocks = [...article.content].sort((a, b) => a.order - b.order);
 
-      <Comments articleId={article.id} />
+  return (
+    <div className="p-6 flex-1 flex justify-center">
+      <div className="max-w-3xl w-full space-y-6 text-left">
+        <h2 className="text-4xl font-bold">{article.title}</h2>
+        <p className="text-gray-600">
+          By <span className="font-medium">{article.author.username}</span> |{" "}
+          {new Date(article.createdAt).toLocaleDateString()}
+        </p>
+        <div className="space-y-6">
+          {blocks.map((block) => {
+            if (block.content) {
+              return (
+                <p key={block.id} className="leading-relaxed text-lg">
+                  {block.content}
+                </p>
+              );
+            }
+            if (block.imageUrl) {
+              return (
+                <Image
+                  key={block.id}
+                  src={block.imageUrl}
+                  alt="Article Image"
+                  width={675}
+                  height={250}
+                  className="rounded-lg shadow-md"
+                />
+              );
+            }
+            if (block.videoUrl) {
+              return (
+                <video
+                  key={block.id}
+                  src={block.videoUrl}
+                  controls
+                  className="w-full max-w-2xl rounded-lg shadow-md"
+                />
+              );
+            }
+            return null;
+          })}
+        </div>
+
+        <div className="pt-8 ">
+          <Comments articleId={article.id} />
+        </div>
+      </div>
     </div>
   );
 }

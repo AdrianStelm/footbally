@@ -1,6 +1,6 @@
 "use client";
 
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useAuthStore } from "../../../store/authStore";
 import ArticleCard from "../../../components/Article";
 import { ArticleType } from "../../../types/ArticleTypes";
@@ -9,6 +9,8 @@ import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
 import { UpdateUserType } from "../../../types/userType";
 import { toast } from "sonner";
+import { GET_MY_ARTICLES } from "../../../graphql/queries/article/articleQuries";
+import { UPDATE_USERNAME, REQUEST_EMAIL_CHANGE, CHANGE_PASSWORD } from "../../../graphql/mutations/user/userMutations";
 
 const changeEmailField: FieldConfig[] = [
     { name: "newEmail", label: "Input your new email", type: "email", placeholder: "Type here", required: true },
@@ -21,43 +23,9 @@ const changePasswordFields: FieldConfig[] = [
     { name: "newPassword", label: "Input your current password", type: "password", placeholder: "Type here", required: true },
 ];
 
-const GET_MY_ARTICLES = gql`
-  query GetArticlesByAuthor {
-    getArticlesByAuthor {
-      id
-      slug
-      title
-      text
-      author {
-        id
-        username
-      }
-      createdAt
-      updatedAt
-      likesCount
-    }
-  }
-`;
 
-const UPDATE_USERNAME = gql`
-  mutation updateUserData($data: UpdateUser!) {
-    updateUser(data: $data) {
-      username
-    }
-  }
-`;
 
-const CHANGE_PASSWORD = gql`
-  mutation changePassword($inputedPassword: String!, $newPassword: String!) {
-    changePassword(inputedPassword: $inputedPassword, newPassword: $newPassword)
-  }
-`;
 
-const REQUEST_EMAIL_CHANGE = gql`
-  mutation requestEmailChange($newEmail: String!) {
-    requestEmailChange(newEmail: $newEmail)
-  }
-`;
 
 enum ProfileMode {
     Articles = "articles",
@@ -131,7 +99,7 @@ export default function ProfilePage() {
 
     return (
         <section>
-            <div className="flex justify-between mx-20 mb-6">
+            <div className="flex overflow-auto px-5 gap-5 whitespace-nowrap md:gap-5 md:px-10 pb-5">
                 <p
                     style={{ color: mode === ProfileMode.Articles ? "#166534" : "" }}
                     className="cursor-pointer"
@@ -161,27 +129,34 @@ export default function ProfilePage() {
                     Change email
                 </p>
             </div>
+            <hr />
 
             {mode === ProfileMode.Articles ? (
                 <>
-                    <h2 className="text-4xl font-bold">Your profile</h2>
-                    <p>{items[0]?.author.username}</p>
+                    <h2 className="text-4xl font-bold mx-5">Your profile</h2>
+                    <p className="mx-5">{items[0]?.author.username}</p>
                     <h2 className="text-3xl text-center font-bold mt-4">Your articles</h2>
                     <div className="space-y-4 mt-2">
-                        {items.map((article) => (
-                            <ArticleCard
-                                key={article.id}
-                                id={article.id}
-                                slug={article.slug}
-                                title={article.title}
-                                text={article.text}
-                                author={article.author}
-                                createdAt={article.createdAt}
-                                updatedAt={article.updatedAt}
-                                likesCount={article.likesCount}
-                            />
-                        ))}
+                        {items.length === 0 ? (
+                            <p className="text-center text-gray-500">U don`t have any articles</p>
+                        ) : (
+                            items.map((article) => (
+                                <ArticleCard
+                                    key={article.id}
+                                    id={article.id}
+                                    slug={article.slug}
+                                    title={article.title}
+                                    text={article.text}
+                                    author={article.author}
+                                    createdAt={article.createdAt}
+                                    updatedAt={article.updatedAt}
+                                    likesCount={article.likesCount}
+                                    content={article.content}
+                                />
+                            ))
+                        )}
                     </div>
+
                 </>
             ) : mode === ProfileMode.ChangeUsername ? (
                 <Form fields={changeUsernameField} onSubmit={handleUpdateUsername} buttonText="Change username" />

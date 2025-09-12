@@ -31,7 +31,7 @@ export default function EventsLeagueCard({ idLeague }: Props) {
     return (
         <section className="mt-10">
             <h2 className="text-4xl text-center mb-5">{data[0].strLeague} | Round {data[0].intRound}</h2>
-            <Image className="m-auto" src={data[0].strLeagueBadge} width={200} height={200} alt="League`s Logo"></Image>
+            <Image className="m-auto" priority src={data[0].strLeagueBadge} width={200} height={200} alt="League`s Logo"></Image>
             {data.map((event, index) => (
                 <article className="flex justify-between items-center rounded-3xl p-5 mt-5 md:justify-around" key={index}>
                     <div className="flex flex-col items-center">

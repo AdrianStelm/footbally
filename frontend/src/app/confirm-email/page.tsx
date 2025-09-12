@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useAuthStore } from "../../../store/authStore";
+import { CONFIRM_EMAIL } from "../../../graphql/mutations/auth/authMutations";
 
-const CONFIRM_EMAIL = gql`
-  mutation confirmEmailChange($token: String!) {
-    confirmEmailChange(token: $token)
-  }
-`;
 
 export default function ConfirmEmailPage() {
     const router = useRouter();

@@ -1,48 +1,16 @@
 "use client";
 
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import Form from "./Form";
 import { FieldConfig } from "../types/formTypes";
 import { useAuthStore } from "../store/authStore";
 import { CommentType } from "../types/commentPyte";
+import { GET_COMMENTS_BY_ARTICLE } from "../graphql/queries/article/articleQuries";
+import { ADD_COMMENT, DELETE_COMMENT } from "../graphql/mutations/article/articleMutations";
 
 const field: FieldConfig[] = [
   { name: "comment", type: "text", placeholder: "Write comment...", required: true },
 ];
-
-const GET_COMMENTS_BY_ARTICLE = gql`
-  query CommentsByArticle($articleId: String!) {
-    commentsByArticle(articleId: $articleId) {
-      id
-      text
-      createdAt
-      author {
-        id
-        username
-      }
-    }
-  }
-`;
-
-const ADD_COMMENT = gql`
-  mutation AddComment($data: CreateCommentInput!) {
-    addComment(data: $data) {
-      id
-      text
-      createdAt
-      author {
-        id
-        username
-      }
-    }
-  }
-`;
-
-const DELETE_COMMENT = gql`
-  mutation DeleteComment($id: String!) {
-    deleteComment(id: $id)
-  }
-`;
 
 interface Props {
   articleId: string;
@@ -81,9 +49,9 @@ export default function Comments({ articleId }: Props) {
   if (error) return <p>Error loading comments</p>;
 
   return (
-    <div className="mt-6">
-      <Form fields={field} onSubmit={handleSubmit} buttonText="Add comment" />
-      <h2 className="font-semibold text-4xl">Comments</h2>
+    <div className="mt-6 ">
+      <Form fields={field} onSubmit={handleSubmit} buttonText="Add comment" fullWidthForm />
+      <h2 className="font-semibold text-4xl mt-5">Comments</h2>
       <div className="space-y-2 mt-5">
         {data?.commentsByArticle.map((c: CommentType) => (
           <div key={c.id} className=" p-2 rounded flex justify-between items-center">

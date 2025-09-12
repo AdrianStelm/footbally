@@ -1,19 +1,19 @@
 import { Resolver, Query, Mutation, Args, ResolveField, Parent, Int } from '@nestjs/graphql';
 import type { FileUpload } from 'graphql-upload-minimal';
 import { GraphQLUpload } from 'graphql-upload-minimal';
-import cloudinary from './cloudinary.provider';
 import { NewsService } from './news.service';
-import { News } from './news.model';
-import { CreateArticleDto, UpdateArticleInput } from './createArticle.model';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { JwtGuard } from 'src/auth/jwt.guard';
-import { CurrentUser } from 'src/auth/current-user.decorator';
-import { Roles } from 'src/auth/roles.decorator';
+import { News } from './dto/news.dto';
+import { CreateArticleDto, UpdateArticleInput } from './dto/create-article.dto';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { JwtGuard } from 'src/common/guards/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/user/role.enum';
 import { UseGuards } from '@nestjs/common';
 import { NewsPaginationArgs } from './news-pagination.args';
-import { NewsPaginationResponse } from './news-pagination.response';
-import { CreateLikeInput } from './news-likes.entity';
+import { NewsPaginationResponse } from './dto/news-pagination-response.dto';
+import { CreateLikeInput } from './dto/news-likes.dto';
+import { SearchArticle } from './dto/search-article.dto';
 
 @Resolver(() => News)
 export class NewsResolver {
@@ -44,29 +44,11 @@ export class NewsResolver {
   async createArticle(
     @Args('data') data: CreateArticleDto,
     @CurrentUser('sub') userId: string,
-    @Args({ name: 'file', type: () => GraphQLUpload, nullable: true }) file?: FileUpload,
+    @Args({ name: 'files', type: () => [GraphQLUpload], nullable: true })
+    files?: Promise<FileUpload>[],
   ): Promise<News> {
-    if (file) {
-      const stream = file.createReadStream();
-
-      const imageUrl = await new Promise<string>((resolve, reject) => {
-        const upload = cloudinary.uploader.upload_stream(
-          { folder: 'articles' },
-          (error, result) => {
-            if (error) return reject(new Error(error.message || 'Upload error'));
-            resolve(result!.secure_url);
-          },
-        );
-        stream.pipe(upload);
-      });
-
-      data.imageUrl = imageUrl;
-    }
-
-    return this.newsService.create(data, userId);
+    return this.newsService.create(data, userId, files);
   }
-
-
 
 
   @Query(() => NewsPaginationResponse)
@@ -149,10 +131,11 @@ export class NewsResolver {
     return this.newsService.getArticlesByAuthorSimple(userId);
   }
 
-  @Mutation(() => Boolean)
-  async deleteArticlesWithoutImage() {
-    await this.newsService.deleteArticlesWithoutImage();
-    return true;
+  @Query(() => [SearchArticle])
+  async searchArticles(
+    @Args('query') query: string,
+  ): Promise<SearchArticle[]> {
+    return this.newsService.searchArticles(query);
   }
 
 

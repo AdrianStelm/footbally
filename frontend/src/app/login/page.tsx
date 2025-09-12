@@ -2,36 +2,21 @@
 
 import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../../../store/authStore";
 import Link from "next/link";
 import { UserType } from "../../../types/userType";
 import { GoogleLogin } from "@react-oauth/google";
 import { useApolloClient } from "@apollo/client";
+import { LOGIN_USER, GOOGLE_LOGIN } from "../../../graphql/mutations/auth/authMutations";
 
 const loginFields: FieldConfig[] = [
     { name: "email", label: "Write your email", type: "email", placeholder: "test@example.com", required: true },
     { name: "password", label: "Write your password", type: "password", required: true }
 ];
 
-const LOGIN_USER = gql`
-  mutation LoginUser($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      access_token
-      userId
-    }
-  }
-`;
 
-const GOOGLE_LOGIN = gql`
-  mutation GoogleLogin($idToken: String!) {
-    googleLogin(idToken: $idToken) {
-      access_token
-      userId
-    }
-  }
-`;
 
 type LoginUserType = Omit<UserType, "username">;
 

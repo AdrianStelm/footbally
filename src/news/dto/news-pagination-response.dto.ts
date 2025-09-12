@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { News } from './news.model';
+import { News } from './news.dto';
 
 @ObjectType()
 export class NewsPaginationResponse {

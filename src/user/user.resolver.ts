@@ -1,15 +1,15 @@
-import { CreateUser, UpdateUser, User } from './user.graphql.model';
+import { CreateUser, UpdateUser, User } from './dto/user.dto';
 import { UserService } from './user.service';
 import { Query, Mutation, Args, Resolver, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { Roles } from 'src/auth/roles.decorator';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { AuthTokens } from 'src/auth/auth-tokens.model';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { AuthTokens } from 'src/auth/dto/auth-tokens.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { Response } from 'express';
-import { JwtGuard } from 'src/auth/jwt.guard';
+import { JwtGuard } from 'src/common/guards/jwt.guard';
 import { Role } from './role.enum';
-import { CurrentUser } from 'src/auth/current-user.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { EmailService } from 'src/email/email.service';
 import * as bcrypt from 'bcrypt'
 

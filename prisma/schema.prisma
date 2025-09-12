@@ -14,17 +14,16 @@ datasource db {
 }
 
 model Article {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
   title     String
-  text      String
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  String    @db.ObjectId
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  slug      String    @unique
-  imageUrl  String?
+  author    User             @relation(fields: [authorId], references: [id])
+  authorId  String           @db.ObjectId
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  slug      String           @unique
   comments  Comment[]
   Like      Like[]
+  content   ArticleContent[]
 }
 
 model User {
@@ -45,6 +44,17 @@ model User {
   Like                 Like[]
 }
 
+model ArticleContent {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  imageUrl  String?
+  videoUrl  String?
+  order     Int
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id])
+  articleId String   @db.ObjectId
+}
+
 model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   text      String
@@ -57,12 +67,11 @@ model Comment {
 }
 
 model Like {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  articleId String @db.ObjectId
-  userId    String @db.ObjectId
-
-  user    User    @relation(fields: [userId], references: [id])
-  article Article @relation(fields: [articleId], references: [id])
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  articleId String  @db.ObjectId
+  userId    String  @db.ObjectId
+  user      User    @relation(fields: [userId], references: [id])
+  article   Article @relation(fields: [articleId], references: [id])
 
   @@unique([userId, articleId])
 }

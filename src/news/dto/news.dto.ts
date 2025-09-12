@@ -1,5 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { User } from 'src/user/user.graphql.model';
+import { User } from 'src/user/dto/user.dto';
+import { ArticleContent } from './article-content.dto';
 
 @ObjectType()
 export class News {
@@ -9,12 +10,8 @@ export class News {
     @Field()
     title: string
 
-    @Field()
-    text: string
-
     @Field(() => User)
     author: User
-
 
     @Field(() => Date)
     createdAt: Date
@@ -25,6 +22,8 @@ export class News {
     @Field()
     slug: string;
 
-    @Field(() => String, { nullable: true })
-    imageUrl?: string | null;
+    @Field(() => [ArticleContent], { nullable: true })
+    content?: ArticleContent[];
+
+
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { CreateCommentInput, UpdateCommentInput } from './comment.entity';
+import { CreateCommentInput, UpdateCommentInput } from './dto/comment.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 @Injectable()

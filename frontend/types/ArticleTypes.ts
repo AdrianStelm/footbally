@@ -1,5 +1,13 @@
 import { PaginatedResponse } from "./paginationType";
 
+export type ArticleMediaType = {
+    id: string
+    content?: string | null;
+    imageUrl?: string | null;
+    videoUrl?: string | null;
+    order?: number | null;
+};
+
 export type ArticleType = {
     id: string;
     title: string;
@@ -9,7 +17,7 @@ export type ArticleType = {
     createdAt: string;
     updatedAt: string;
     likesCount: number;
-    imageUrl?: string;
+    content?: ArticleMediaType[];
 }
 
 export type ArticlesPaginatedDataType = {

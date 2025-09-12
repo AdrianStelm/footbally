@@ -2,11 +2,12 @@
 
 import { FieldConfig } from "../../../types/formTypes";
 import Form from "../../../components/Form";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../../../store/authStore";
 import Link from "next/link";
 import { UserType } from "../../../types/userType";
+import { REGISTER_USER } from "../../../graphql/mutations/auth/authMutations";
 
 const registerFields: FieldConfig[] = [
     { name: "username", label: "Write your username", type: "text", required: true },
@@ -14,14 +15,7 @@ const registerFields: FieldConfig[] = [
     { name: "password", label: "Write your password", type: "password", required: true }
 ];
 
-const REGISTER_USER = gql`
-mutation RegisterUser($data: CreateUser!) {
-  createUser(data: $data) {
-    userId
-    access_token
-  }
-}
-`;
+
 
 export default function Page() {
     const [registerUser, { loading, error, data }] = useMutation(REGISTER_USER);
