@@ -14,11 +14,8 @@ type ArticleWithAuthor = Prisma.ArticleGetPayload<{ include: { author: true } }>
 interface SearchArticleType {
   id: string;
   title: string;
-  text: string;
-  imageUrl?: string;
   slug: string
 }
-
 
 @Injectable()
 export class NewsService {
@@ -131,7 +128,6 @@ export class NewsService {
       if (sort === 'title_desc') orderBy = { title: 'desc' };
     }
 
-    // Підготовка курсора для пагінації
     let cursorId: string | undefined;
     if (page > 1) {
       const cursorItem = await this.prisma.article.findMany({
@@ -309,15 +305,23 @@ export class NewsService {
             index: "default",
             wildcard: {
               query: `*${query}*`,
-              path: ["title"],
-              allowAnalyzedField: true
-            },
-          },
+              path: "title",
+              allowAnalyzedField: true // 👈 ось тут
+            }
+          }
         },
         { $limit: 20 },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            slug: 1
+          }
+        }
       ],
-      cursor: {},
+      cursor: {}
     });
+    ;
 
     const result = rawResult as {
       cursor?: { firstBatch?: SearchArticleType[] };

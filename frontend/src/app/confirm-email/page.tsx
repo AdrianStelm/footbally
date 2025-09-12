@@ -5,10 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@apollo/client";
 import { useAuthStore } from "../../../store/authStore";
 import { CONFIRM_EMAIL } from "../../../graphql/mutations/auth/authMutations";
+import { useCheckAuth } from "../../../hooks/useCheckAuth";
 
 
 export default function ConfirmEmailPage() {
     const router = useRouter();
+    useCheckAuth();
     const searchParams = useSearchParams();
     const { accessToken } = useAuthStore();
     const token = searchParams.get("token");

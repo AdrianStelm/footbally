@@ -9,6 +9,7 @@ import { ArticleType } from "../types/ArticleTypes";
 import Image from "next/image";
 import { DELETE_ARTICLE } from "../graphql/mutations/article/articleMutations";
 import { LIKE_ARTICLE } from "../graphql/mutations/article/articleMutations";
+import { toast } from "sonner";
 
 
 type Props = ArticleType;
@@ -30,12 +31,20 @@ export default function ArticleCard(props: Props) {
     const [likes, setLikes] = useState(likesCount);
 
     const handleLike = async () => {
-        const { data } = await likeArticle({
-            variables: { data: { articleId: id } },
-        });
 
-        if (data?.LikeArticle) {
-            setLikes(data.LikeArticle.likesCount);
+        if (!currentUserId) {
+            router.replace('/login')
+        }
+        try {
+            const { data } = await likeArticle({
+                variables: { data: { articleId: id } },
+            });
+
+            if (data?.LikeArticle) {
+                setLikes(data.LikeArticle.likesCount);
+            }
+        } catch {
+            toast.error("To do it, need sign in");
         }
     };
 

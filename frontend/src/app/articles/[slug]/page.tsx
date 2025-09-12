@@ -3,14 +3,43 @@ import client from "../../../../apollo/apollo-client";
 import { notFound } from "next/navigation";
 import Comments from "../../../../components/Comments";
 import Image from "next/image";
+import type { Metadata } from "next";
 
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = await params;
 
+  try {
+    const { data } = await client.query({
+      query: GET_ARTICLE_BY_SLUG,
+      variables: { slug },
+      fetchPolicy: "no-cache",
+    });
 
-interface ArticlePageProps {
-  params: Promise<{ slug: string }>;
+    const article = data?.getArticleBySlug;
+    if (!article) return { title: "Article not found" };
+
+    const previewText =
+      article.content.find((block: any) => block.content)?.content?.slice(0, 150) ??
+      "Read the latest football news";
+
+    return {
+      title: article.title,
+      description: previewText,
+      openGraph: {
+        title: article.title,
+        description: previewText,
+        images: article.content.find((block: any) => block.imageUrl)?.imageUrl
+          ? [article.content.find((block: any) => block.imageUrl).imageUrl]
+          : [],
+      },
+    };
+  } catch {
+    return { title: "Error loading article" };
+  }
 }
 
-export default async function ArticlePage({ params }: ArticlePageProps) {
+
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const { slug } = await params;
 
   const { data } = await client.query({
@@ -46,11 +75,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 <Image
                   key={block.id}
                   src={block.imageUrl}
-                  alt="Article Image"
-                  width={675}
+                  alt={article.title}
+                  width={625}
                   height={250}
-                  className="rounded-lg shadow-md"
+                  className="rounded-lg shadow-md w-full h-auto"
+                  priority
                 />
+
               );
             }
             if (block.videoUrl) {
@@ -59,7 +90,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   key={block.id}
                   src={block.videoUrl}
                   controls
-                  className="w-full max-w-2xl rounded-lg shadow-md"
+                  className="w-full max-w-3xl rounded-lg shadow-md"
                 />
               );
             }
@@ -67,7 +98,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           })}
         </div>
 
-        <div className="pt-8 ">
+        <div className="pt-8">
           <Comments articleId={article.id} />
         </div>
       </div>

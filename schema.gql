@@ -90,7 +90,7 @@ type Mutation {
   requestEmailChange(newEmail: String!): Boolean!
   confirmEmailChange(token: String!): Boolean!
   login(email: String!, password: String!): AuthTokens!
-  refreshTokens: AuthTokens!
+  refreshTokens: AuthTokens
   logout(userId: String!): Boolean!
   requestPasswordReset(email: String!): Boolean!
   passwordReset(token: String!, newPassword: String!): Boolean!

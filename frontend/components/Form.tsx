@@ -62,7 +62,7 @@ export default function Form<TFormValues extends Record<string, string>>({
                         </div>
                     );
                 })}
-                <button disabled={disabled} type="submit" className="mt-5 px-10 py-3 text-white bg-black rounded-2xl hover:bg-green-700">
+                <button disabled={disabled} type="submit" className="mt-5 px-10 py-3 text-white bg-gradient-to-tr from-green-900 to-black rounded-2xl hover:bg-gradient-to-r transition-all hover:animate-pulse duration-1500">
                     {buttonText}
                 </button>
             </form>

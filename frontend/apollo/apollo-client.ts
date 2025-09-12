@@ -24,6 +24,17 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     if (graphQLErrors) {
         for (const err of graphQLErrors) {
             if (err.extensions?.code === "UNAUTHENTICATED") {
+                if (!useAuthStore.getState().userId) {
+                    return;
+                }
+                if (err.message.includes("No token provided")) {
+                    window.location.href = "/login";
+                }
+                const hasRefresh = typeof window !== "undefined" && document.cookie.includes("refreshToken=");
+                if (!hasRefresh) {
+                    return;
+                }
+
                 return fromPromise(
                     fetch(API_URL, {
                         method: "POST",
@@ -40,10 +51,11 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
               `,
                         }),
                     })
-                        .then(res => res.json())
-                        .then(data => {
+                        .then((res) => res.json())
+                        .then((data) => {
                             if (!data.data?.refreshTokens) throw new Error("Refresh failed");
                             const { access_token, userId } = data.data.refreshTokens;
+
                             useAuthStore.getState().setAuth(access_token, userId);
 
                             operation.setContext(({ headers = {} }) => ({
@@ -58,6 +70,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
         }
     }
 });
+
 
 const client = new ApolloClient({
     link: from([errorLink, authLink, httpLink]),

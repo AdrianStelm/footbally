@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from '../user/user.module';
-import { RolesGuard } from './roles.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { EmailService } from 'src/email/email.service';
 

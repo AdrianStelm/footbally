@@ -69,7 +69,7 @@ export class AuthService {
 
             return this.login(user);
         } catch {
-            throw new Error('Refresh token expired or invalid');
+            return null
         }
     }
 

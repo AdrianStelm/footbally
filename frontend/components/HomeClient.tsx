@@ -9,6 +9,7 @@ import ArticleCard from "./Article";
 import FootballTable from "./Table";
 import EventsLeagueCard from "./EventsLeagueCard";
 import { GET_TOP7_POPULAR_ARTICLES, GET_ARTICLES_PAGINATED } from "../graphql/queries/article/articleQuries";
+import Spinner from "./Spinner";
 
 
 const ARTICLES_PER_PAGE = 7;
@@ -20,6 +21,7 @@ export default function HomeClient({ initialArticles }: { initialArticles: Artic
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [popularArticles, setPopularArticles] = useState<ArticleType[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchPopular = async () => {
@@ -31,21 +33,27 @@ export default function HomeClient({ initialArticles }: { initialArticles: Artic
 
     useEffect(() => {
         const fetchArticles = async () => {
-            const { data } = await client.query({
-                query: GET_ARTICLES_PAGINATED,
-                variables: { page: 1, limit: ARTICLES_PER_PAGE },
-                fetchPolicy: "no-cache",
-            });
+            try {
+                setLoading(true);
+                const { data } = await client.query({
+                    query: GET_ARTICLES_PAGINATED,
+                    variables: { page: 1, limit: ARTICLES_PER_PAGE },
+                    fetchPolicy: "no-cache",
+                });
 
-            const { items, totalPages } = data.articlesPaginated;
-            setArticles(items);
-            setTotalPages(totalPages);
-            setPage(2);
+                const { items, totalPages } = data.articlesPaginated;
+                setArticles(items);
+                setTotalPages(totalPages);
+                setPage(2);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchArticles();
     }, []);
 
     const loadMore = async () => {
+        setLoading(true);
         const { data } = await client.query({
             query: GET_ARTICLES_PAGINATED,
             variables: { page, limit: ARTICLES_PER_PAGE },
@@ -59,6 +67,7 @@ export default function HomeClient({ initialArticles }: { initialArticles: Artic
 
     return (
         <div className="p-6">
+            {loading && <Spinner />}
             <main className="grid grid-cols-1 2xl:grid-cols-[1fr_1fr_auto] gap-8">
                 <div className="lg:col-span-2">
                     <h2 className="text-5xl text-center mb-6">Popular articles</h2>

@@ -3,7 +3,14 @@
 :root {
   --background: #eeeeee;
   --foreground: #171717;
-  --article: white
+  --article: white;
+  --font-actor: 'Actor', sans-serif;
+}
+
+body {
+  background: #016420;
+  background: linear-gradient(4deg, rgb(2, 102, 34) 0%, rgb(255, 255, 255) 92%);
+  font-family: var(--font-actor);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -12,9 +19,17 @@
     --foreground: #ffffff;
     --article: #00000050;
   }
+
+  body {
+    background: #00c43e;
+    background: linear-gradient(4deg, rgb(2, 102, 34) 0%, rgba(0, 0, 0, 1) 92%);
+  }
+
 }
 
-body,
+
+
+
 input#search {
   background: var(--background);
   color: var(--foreground);
@@ -33,7 +48,8 @@ h2,
 a,
 p,
 article,
-time {
+time,
+span {
   color: var(--foreground);
 
 }

@@ -55,6 +55,7 @@ export default function Page() {
                 Forgot password?
             </Link>
             <GoogleLogin
+                theme="filled_blue"
                 onSuccess={async (credentialResponse) => {
                     try {
                         const idToken = credentialResponse.credential;

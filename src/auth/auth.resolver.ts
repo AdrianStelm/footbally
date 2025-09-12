@@ -9,7 +9,7 @@ import { UseGuards } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/user/role.enum';
 import { Roles } from '../common/decorators/roles.decorator';
-import { RolesGuard } from './roles.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Response, Request } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 
@@ -44,14 +44,18 @@ export class AuthResolver {
   }
 
 
-  @Mutation(() => AuthTokens)
-  async refreshTokens(@Context() ctx: { req: Request; res: Response }): Promise<AuthTokens> {
+  @Mutation(() => AuthTokens, { nullable: true })
+  async refreshTokens(
+    @Context() ctx: { req: Request; res: Response }
+  ): Promise<AuthTokens | null> {
     const tokenFromCookie: unknown = ctx.req.cookies['refresh_token'];
     const token: string | undefined = typeof tokenFromCookie === 'string' ? tokenFromCookie : undefined;
 
-    if (!token) throw new Error('No refresh token');
+    if (!token) return null;
 
     const tokens = await this.authService.refreshTokens(token);
+
+    if (!tokens) return null;
 
     ctx.res.cookie('refresh_token', tokens.refresh_token, {
       httpOnly: true,
@@ -62,6 +66,7 @@ export class AuthResolver {
 
     return tokens;
   }
+
 
 
   @UseGuards(JwtGuard, RolesGuard)

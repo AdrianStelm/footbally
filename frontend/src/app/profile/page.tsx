@@ -11,6 +11,7 @@ import { UpdateUserType } from "../../../types/userType";
 import { toast } from "sonner";
 import { GET_MY_ARTICLES } from "../../../graphql/queries/article/articleQuries";
 import { UPDATE_USERNAME, REQUEST_EMAIL_CHANGE, CHANGE_PASSWORD } from "../../../graphql/mutations/user/userMutations";
+import { useCheckAuth } from "../../../hooks/useCheckAuth";
 
 const changeEmailField: FieldConfig[] = [
     { name: "newEmail", label: "Input your new email", type: "email", placeholder: "Type here", required: true },
@@ -38,7 +39,7 @@ export default function ProfilePage() {
     const { initialized } = useAuthStore();
     const [mode, setMode] = useState<ProfileMode>(ProfileMode.Articles);
     const [emailCooldown, setEmailCooldown] = useState(false);
-
+    useCheckAuth();
     const [updateUsername] = useMutation(UPDATE_USERNAME, {
         refetchQueries: [{ query: GET_MY_ARTICLES }],
     });
